@@ -1,0 +1,1165 @@
+Novel On-line Monitoring Method of Cutting Chatter Based on Neural 
+
+Network Pattern Recognition Technique  
+
+Shi Hongyan and Hu Hong  
+
+Harbin Institute of Technology Shenzhen Graduate School 
+
+shy-no.1@163.com 
+
+Abstract 
+
+investigating 
+
+A  novel  cutting  chatter  monitoring  method  is 
+presented  by 
+the  characteristics  of 
+probability  density  of  the  cutting  system  vibration 
+response.  When  the  cutting  is  stable,  the  vibration 
+response  can  be  regarded  as  random  noise  and  the 
+corresponding  probability  density  function  is  normal 
+distributed. However, sinusoidal components dominate 
+the  vibration  response  and  its  probability  density 
+function  is  U-shaped  distributed  when  the  cutting 
+process  experiences  chatter.  Thus  the  probability 
+density of the vibration response is sensitive to cutting 
+chatter and  is employed  as  the monitoring parameter 
+in  this  study.  Neural  network  pattern  recognition 
+technique  is  introduced  to  recognize  cutting  chatter 
+considering  its  excellent  capability  of  classification. 
+Experiments conducted on an engine lathe confirm that 
+the  probability  density  of  the  vibration  response  a 
+suitable monitoring parameter and cutting chatter can 
+be successfully detected by the proposed method.  
+
+1. Introduction 
+
+    Cutting  chatter  is  a  dynamic  unstable  phenomenon 
+in  cutting  system,  which  degrades  the  workpiece 
+surface quality, reduces cutting tool and machine lives, 
+and  even  worse  causes  the  failure  of  machine  tool. 
+Chatter monitoring depends heavily on the selection of 
+sensors, as well as on the data   processing techniques 
+employed.  Excellent  reviews  on 
+in 
+machining  process  can  be  found  in  [1].  Generally, 
+into  direct 
+sensing 
+measurement,  where 
+is  obtained       
+via signal processing and indirect measurement, where 
+the  attribute  is  obtained  directly  from  the  signals. 
+Typical  indirect  sensing  techniques,  such  as  dynamic 
+force  [2,  3],  acceleration  [4,  5],  ultrasound  waves  [6] 
+and drive current [7] can be utilized in cutting chatter 
+monitoring. 
+
+techniques  can  be  classified 
+information 
+
+the  sensors 
+
+the 
+
+The  purpose  of  cutting  chatter  monitoring  is  to 
+detect the chatter and send alarm in the early stage of 
+chatter  development  in  order  to  ensure  timely  chatter 
+control mechanism can be triggered. Thus the selection 
+of  monitoring  parameter  is  of  great  importance  to 
+achieve  this  goal.  The  monitoring  parameter  must  be 
+sensitive to cutting chatter and its processing time must  
+be  short.  In  general,  statistical  parameters  including 
+mean  value  and  standard  variance,  spectrum  analysis 
+based  frequency  domain  parameters  and  wavelet 
+analysis based time-frequency domain  parameters can 
+be  employed  as  the  monitoring  parameters.  In  this 
+paper, the probability density function of the vibration 
+response,  a  new  monitoring  parameter,  is  introduced. 
+The  calculation  of  monitoring  parameter  can  be 
+conducted  just  in  time  domain  and  only  very  simple 
+algorithm is involved, therefore the processing time is 
+very short.  
+
+2. Determination of monitoring parameter 
+
+In  this  study,  probability  density  of  the  vibration 
+response  is  utilized  as  the  monitoring  parameter  as  it 
+varies  greatly  when  the  cutting  process  is  stable  and 
+experiences  chatter.  In  stable  cutting,  the  vibration 
+response 
+ can  be  regarded  as  random  noise  and 
+its probability density 
+
+(cid:11) (cid:12)tar
+
+(cid:3) (cid:3) (cid:3)
+
+(cid:3)
+
+(cid:3)
+
+(cid:3)(cid:3)(cid:3)(cid:3)(cid:3)(cid:3) (cid:11)
+ap
+
+r
+
+(cid:12)
+
+(cid:32)
+
+1
+2
+(cid:86)(cid:83)
+r
+
+(cid:167)
+(cid:168)
+exp
+(cid:168)
+(cid:169)
+
+(cid:16)
+
+2
+
+a
+r
+2
+(cid:86)
+r
+
+(cid:3)(cid:3)(cid:3)(cid:3)(cid:3)(cid:3)(cid:3)(cid:3)(cid:3)(cid:3)(cid:3)(cid:3)(cid:3)(cid:3)(cid:3)(cid:3)(cid:3)(cid:3)(cid:3)(cid:3)(cid:3)(cid:3)(cid:3)(cid:3)(cid:3)
+(cid:183)
+(cid:184)
+(cid:184)
+(cid:185)
+
+(cid:3)(cid:3)(cid:3)(cid:3)(cid:3)(cid:3)(cid:3)(cid:3)(cid:3)(cid:3)(1)(cid:3)
+
+2
+
+)(tar
+sinusoidal 
+
+(cid:3)is the vibration response in stable cutting, 
+)(tar
+and(cid:3) (cid:86)r  are  probability  density  and  standard 
+. But if the cutting process becomes 
+the 
+
+where(cid:3)
+( rap
+)
+deviation of 
+unstable, 
+components  dominate 
+vibration response, which might be described as: 
+            
+where 
+cutting, 
+
+sin(
+                      (2) 
+A
+n
+(cid:783)
+ is  the  vibration  response  in  unstable 
+ is the probability density of 
+ ,  Ans
+
+ta
+)(
+(cid:783) (cid:729)
+)(tas
+)(tps
+
+)(tas
+
+)
+
+(cid:73)(cid:90)
+s
+
+ns
+
+(cid:14)
+
+t
+
+(cid:691)
+
+0-7695-2882-1/07 $25.00 ©2007 IEEE
+
+, (cid:73) is  the  phase  of 
+
+ , (cid:90)ns
+
+( sap
+
+)
+
+ is  the  circular 
+.The 
+ can  be  expressed 
+
+)(tas
+
+         
+                       (3) 
+
+2
+
+(cid:32)
+
+(cid:83)
+
+1
+2
+Ans
+
+(cid:16)
+
+sa
+
+)(tas
+
+)(tas
+
+is  the  amplitude  of 
+frequency  of 
+probability  density  function 
+as[13]: 
+ 
+
+ 
+
+ 
+
+ 
+                       
+
+ 
+(cid:11)
+(cid:12)sap
+
+to  unstable  one.  During 
+
+    It is certain that there is a transitional cutting process 
+from  stable  state 
+the 
+transitional cutting process, the vibration response can 
+be expressed as the superposition of sine signal and the 
+random signal, that is 
+ 
+ 
+                 
+)(ta
+where 
+process. Assuming 
+each  other,  the  probability  density  function 
+
+ta
+)(
+           (4) 
+ is  the  vibration  response  in  transition 
+ are independent of 
+ of 
+
+ 
+ta
+)(
+r
+
+ 
+ta
+)(
+s
+
+            
+
+)(tar
+
+)(tas
+
+        
+
+ and 
+
+(cid:14)
+
+(cid:32)
+
+ 
+
+(cid:11) (cid:12)ap
+
+)
+r
+1
+
+ is the convolution of  pr  and
+)(ta
+ap
+)(
+(cid:32)
+
+ap
+(
+
+ap
+(
+
+(cid:13)
+
+)
+
+s
+
+)(aps
+
+, i.e. 
+
+(cid:32)
+
+(cid:83)(cid:83)(cid:86)
+
+r
+
+2
+
+(cid:83)
+(cid:179)
+0
+
+exp
+
+(cid:11)
+a
+
+(cid:16)
+
+(cid:16)
+
+(cid:167)
+(cid:168)
+(cid:168)
+(cid:169)
+
+cos
+Ans
+2
+2
+(cid:86)
+r
+
+2
+
+(cid:12) (cid:77)
+(cid:183)
+(cid:73)
+(cid:184)
+d
+(cid:184)
+(cid:185)
+
+         (5) 
+
+2
+
+R
+
+the 
+
+s(cid:86)  is 
+
+,  where 
+
+2 /
+(cid:86)(cid:86)
+s
+r
+)(tas
+, can be plotted, as shown in Figure 1. 
+
+On  the  basis  of  Equation  (5),  standardized 
+probability  density  function  for  different  values 
+standard 
+of
+(cid:32)
+deviation
+    It  can  be  found  from  the  curves  in  Figure  1  that 
+shapes of the probability density function curves varies 
+significantly  corresponding  to  different  value  of  R .
+When  the  cutting  is  stable,  the  vibration  response 
+contains random noise only ( R =0) and its probability 
+density  shows  normal  distribution.  When  R  increases 
+gradually  from  zero  to  infinite,  the  sine  components 
+increase  gradually  and  the  cutting  process  is  in  the 
+transition process from stable cutting to unstable one. 
+As R approaches infinite, the probability density of the 
+vibration  response  presents  a  U-shaped  distribution, 
+which  means  the  sine  component  dominates  the 
+vibration  response  and  cutting  process  experiences 
+strong chatter. 
+    To  conclude  the  above  results,  the  probability 
+density  function  of  the  cutting  system  vibration 
+response is sensitive to the cutting states and it can be 
+utilized as the parameter to monitor the cutting chatter 
+online.  At  the  same  time,  the  calculation  of  this 
+monitoring  parameter  is  in  time  domain  and  very 
+simple algorithm is required. Therefore, it is confident 
+that  the  cutting  chatter  can  be  detected  in  time  and 
+reliable  chatter  control  can  be  achieved 
+if  an 
+appropriate control mechanism is employed. 
+
+0.7
+
+0.6
+
+0.5
+
+0.4
+
+0.3
+
+0.2
+
+0.1
+
+0.0
+
+y
+t
+i
+s
+n
+e
+D
+ 
+y
+t
+i
+l
+i
+
+b
+a
+b
+o
+r
+
+P
+ 
+d
+e
+z
+i
+r
+a
+d
+n
+a
+t
+A
+
+ R=0
+ R=1
+ R=4
+ R=10
+ R=100
+
+-4
+
+-3
+
+-2
+
+-1
+
+0
+
+1
+
+2
+
+3
+
+4
+
+Standarized amplitude
+
+Fig. 1 Typical probability density function
+
+3. Chatter monitoring scheme 
+
+    Cutting  chatter  monitoring  can  be  regarded  as  a 
+typical pattern recognition problem, and then it can be 
+conducted by utilizing an effective pattern recognition 
+method.  Pattern 
+the  process  of 
+identifying  objects  according  to  certain  features.  A 
+whole  patter  recognition  process  can  be  divided  into 
+the following three critical steps: 
+
+recognition 
+
+1) Sensing—to  pick  up  the  information  of  the 
+
+is 
+
+object by some kind of a transducer. 
+
+2) Features extraction—to characterize an object 
+to  be  recognized  by  measurements  whose 
+values are very similar for objects in the same 
+category  and  very  different  for  objects  in 
+different category. 
+
+3) Classification—to  assign  the  object  into  a 
+
+category based on the extracted features. 
+
+theory 
+
+    The most classical pattern recognition problem is the 
+statistical  one.  Bayesian  decision 
+is  a 
+fundamental  statistical  approach.  This  approach  is 
+based  on  quantifying  the  tradeoffs  between  various 
+classification decisions using probability and the costs 
+that accompany such decisions. 
+    However,  with 
+the  development  of  artificial 
+intelligence  in  recent  years,  new  pattern  recognition 
+methods based on artificial intelligent techniques, such 
+as neural networks, fuzzy logic, genetic algorithms and 
+expert  systems,  are  successfully  employed  in  many 
+fields.  Especially, 
+the  neural  network  pattern 
+recognition methods have been verified as a powerful 
+tool to solve the complicated classification problem. It 
+has  been  proven  that  any  continuous  function  can  be 
+implemented  in  a  three-layer  neural  network.  At  the 
+same  time,  pattern  classification  is  considered  as 
+perhaps  the  most  important  application  of  artificial 
+
+neural  networks  as  a  majority  of  neural  networks 
+applications  can  be  categorized  as  solving  complex 
+pattern classification problems. 
+    So a MLP neural network is employed in this paper 
+to detect the cutting chatter. Then the next key problem 
+is  how  to  extract  the  representative  features  from  the 
+monitoring  parameter.  As  shown  in  Figure  1,  the 
+probability  density  function  of  the  vibration  response 
+takes different looks corresponding to different cutting 
+states.  Thus  the  frequency  numbers  of  standardized 
+vibration amplitude falls in a certain range should vary 
+obviously in different cutting states. In this study, the 
+ranges for frequency numbers calculation are set as: [-
+2.4 -2], [-1.4 -1], [-0.8 0.8], [1 1.4] and [2 2.4]. Then 
+five values of frequency number are fed into a neural 
+network with 20 hidden nodes and one output node for 
+chatter  monitoring.  The  network  is  a  multilayer  type 
+consisting  of  an  assemblage  of  neurons  that  are 
+arranged into layers. The input layer contains 5 nodes 
+and each node is connected to all the 20 neurons in the 
+adjacent hidden layer. Similarly, each of the neurons in 
+the  hidden  layer  is  connected  to  the  neuron  in  the 
+output layer. 
+    To conclude the above discussions, the novel chatter 
+monitoring  scheme  as  shown  in  Figure  2  can  be 
+achieved.  The  vibration  response  collected  from  the 
+cutting  system  is  processed  first  to  calculate  the 
+frequency numbers of standardized vibration amplitude 
+falls in the five predetermined ranges. Then the values 
+of frequency numbers are input to the neural network 
+classifier.  Finally,  the  chatter  can  be  monitored  by 
+investigating the neural network output. 
+
+(cid:38)(cid:88)(cid:87)(cid:87)(cid:76)(cid:81)(cid:74)(cid:3)(cid:54)(cid:92)(cid:86)(cid:87)(cid:72)(cid:80)
+
+(cid:57)(cid:76)(cid:69)(cid:85)(cid:68)(cid:87)(cid:76)(cid:82)(cid:81)(cid:3)(cid:85)(cid:72)(cid:86)(cid:83)(cid:82)(cid:81)(cid:86)(cid:72)
+
+(cid:41)(cid:85)(cid:72)(cid:84)(cid:88)(cid:72)(cid:81)(cid:70)(cid:92)(cid:3)(cid:81)(cid:88)(cid:80)(cid:69)(cid:72)(cid:85)
+
+(cid:70)(cid:68)(cid:79)(cid:70)(cid:88)(cid:79)(cid:68)(cid:87)(cid:76)(cid:82)(cid:81)
+
+(cid:49)(cid:72)(cid:88)(cid:85)(cid:68)(cid:79)
+(cid:49)(cid:72)(cid:87)(cid:90)(cid:82)(cid:85)(cid:78)
+
+(cid:38)(cid:88)(cid:87)(cid:87)(cid:76)(cid:81)(cid:74)
+(cid:54)(cid:87)(cid:68)(cid:87)(cid:72)(cid:86)
+
+(cid:11)(cid:86)(cid:87)(cid:68)(cid:69)(cid:79)(cid:72)(cid:3)(cid:82)(cid:85)
+(cid:70)(cid:75)(cid:68)(cid:87)(cid:87)(cid:72)(cid:85)(cid:12)
+
+Fig. 2 Chatter monitoring scheme 
+
+.
+
+4. Experimental verifications 
+
+The experiments are carried out on a general engine 
+lathe and a cylinder workpiece is machined, as shown 
+in Figure 3. The tool holder is specially designed with 
+low  rigidity  in  order  to  introduce  the  cutting  chatter 
+easily. The acceleration response signal is picked up by 
+an  accelerometer  mounted  on  the  end  of  the  cutter. 
+Then  the  acceleration  response  signal  is  amplified  by 
+the  charge  amplifier  and  fed  into  A/D  converter  for 
+digitalization.  The  calculation  of 
+the  monitoring 
+parameter  and  pattern  recognition  are  processed  in  a 
+computer. 
+
+Spindle
+
+Workpiece
+
+Tool
+
+Tool holder
+
+Accelerometer
+
+Charge
+amplifier
+
+A/D
+
+Computer
+
+Fig.3 Cutting chatter monitoring system 
+
+The  first  part  of  experimental  verification 
+
+is 
+conducted  to  confirm 
+the  probability  density  of 
+vibration  response  is  sensitive  to  the  cutting  chatter. 
+One  group  of  probability  density  functions  are 
+displayed in Figure 4. Among these curves, curves (a) 
+and  (b)  are  obtained  when  the  cutting  is  stable  and 
+curves  (c)  and  (d)  are  obtained  when  chatter  is  early 
+and fully developed respectively. It can be found from 
+Figures  4 
+the 
+acceleration response transits from normal distribution 
+to U-shaped distribution when cutting process transits 
+from  stable 
+the 
+probability  density  function  of  vibration  response  is 
+sensitive to cutting chatter. These results are coincident 
+with the analysis results in Section 1. 
+
+to  unstable  states.  Therefore, 
+
+the  probability  density  of 
+
+that 
+
+-3
+
+-2
+
+n
+o
+
+i
+t
+c
+n
+u
+
+f
+ 
+y
+t
+i
+s
+n
+e
+d
+ 
+y
+t
+i
+l
+i
+
+b
+a
+b
+o
+r
+P
+
+0.07
+
+0.06
+
+0.05
+
+0.04
+
+0.03
+
+0.02
+
+0.01
+
+0.00
+
+-0.01
+
+n
+o
+
+i
+t
+c
+n
+u
+
+f
+ 
+y
+t
+i
+s
+n
+e
+d
+ 
+y
+t
+i
+l
+i
+
+b
+a
+b
+o
+r
+P
+
+0.06
+
+0.05
+
+0.04
+
+0.03
+
+0.02
+
+0.01
+
+0.00
+
+0
+
+-1
+Standarized amplitude
+
+1
+
+(b)
+
+2
+
+3
+
+(d)
+
+0
+
+-1
+Standarized amplitude
+
+1
+
+(a)
+
+n
+o
+
+i
+t
+c
+n
+u
+
+f
+ 
+y
+t
+i
+s
+n
+e
+d
+
+ 
+y
+t
+i
+l
+i
+
+b
+a
+b
+o
+r
+P
+
+0.07
+
+0.06
+
+0.05
+
+0.04
+
+0.03
+
+0.02
+
+0.01
+
+0.00
+
+2
+
+3
+
+-3
+
+-2
+
+(c)
+
+n
+o
+i
+t
+c
+n
+u
+f
+ 
+y
+t
+i
+s
+n
+e
+d
+ 
+y
+t
+i
+l
+i
+
+b
+a
+b
+o
+r
+
+P
+
+0.05
+
+0.04
+
+0.03
+
+0.02
+
+0.01
+
+0.00
+
+-3
+
+-2
+
+-1
+1
+Standarized amplitude
+
+0
+
+2
+
+3
+
+-2
+
+-1
+
+0
+
+Standarized amplitude
+
+1
+
+2
+
+Fig. 4 Probability density of vibration 
+
+responses
+
+    Then  the  proposed  neural  network  based  chatter 
+monitoring scheme is examined. The neural network is 
+trained first by utilizing the data of vibration response 
+collected in the cutting process. In the training process, 
+
+the learning rate is set to 0.1 and the moment constant 
+is set to 0.85. The output of the neural network is set to 
+1  when  cutting  process  experiences  chatter  and  0  for 
+stable  cutting.  The  weights  are  initialized  to  random 
+value with uniformly distribution. After the successful 
+training of neural network, it can be used to recognize 
+the  cutting  state  and  indicate  whether  the  cutting 
+chatter occurs or not. 
+
+The  typical  results  of  many  tests  are  shown  in 
+Figures 5 and 6 and let us look at Figure 5 first. In this 
+figure, the time domain vibration response is displayed. 
+At  the  beginning  of  cutting,  the  cutting  process  is 
+stable and no chatter can be observed. But the cutting 
+chatter gradually develops around 10s and very strong 
+chatter  occurs  after  15s.  The  corresponding  output  of 
+the  neural  network  is  depicted  in  Figure  6.  It  can  be 
+easily found the neural network outputs values close to 
+0  when  the  cutting  is  stable.  But  the  output  values 
+increase gradually and values are close to 1 when the 
+chatter  is  fully  developed.  If  we  set  the  threshold  for 
+alarming as 0.5, the monitoring system can detect the 
+cutting  chatter  at  10s  in  this  example,  i.e.  the  cutting 
+chatter  is  detected  at  the  early  stage  of  chatter 
+development.  
+
+)
+
+V
+
+(
+ 
+n
+o
+
+i
+t
+
+a
+r
+b
+v
+ 
+f
+
+i
+
+ 
+
+o
+e
+d
+u
+
+t
+i
+l
+
+p
+m
+A
+
+(a )
+
+(b )
+
+(c )
+
+(d )
+
+4
+
+3
+
+2
+
+1
+
+0
+
+-1
+
+-2
+
+-3
+
+-4
+
+0
+
+4
+
+8
+
+1 2
+
+T im e  (s )
+
+1 6
+
+2 0
+
+2 4
+
+Fig. 5 Vibration response in chatter 
+
+development process 
+
+k
+r
+o
+w
+e
+n
+
+t
+
+ 
+l
+
+a
+r
+u
+e
+n
+
+ 
+f
+
+o
+
+ 
+t
+
+t
+
+u
+p
+u
+O
+
+1 .2
+
+1 .0
+
+0 .8
+
+0 .6
+
+0 .4
+
+0 .2
+
+0 .0
+
+0
+
+4
+
+8
+
+1 2
+
+T im e  ( s )
+
+1 6
+
+2 0
+
+2 4
+
+Fig.6 Output of neural network 
+
+Considering  the  successful  rate  of  the  proposed 
+method  for  chatter  monitoring,  this  method  can  be 
+combined with a chatter control system as a monitoring 
+module to achieve stable cutting with high machining 
+efficiency.  If  the  chatter  is  detected,  chatter  control 
+
+mechanisms,  for  example,  varying  spindle  speed 
+cutting  [8],  can  be  triggered  to  suppress  the  chatter 
+under development. 
+
+5. Conclusions 
+
+The  probability  density  function  of  vibration 
+response transits from normal distribution to U-shaped 
+distribution  when  the  cutting  process  changes  from 
+stable  state  to  unstable  one.  To  reflect  this  changing 
+process, 
+the  frequency  numbers  of  standardized 
+vibration  amplitude  falls  in  the  predetermined  ranges 
+are employed as the inputs of neural network classifier. 
+The  verification  experiments  demonstrate  that  the 
+probability  density  function  of  vibration  response  is 
+sensitive to the cutting chatter. Moreover, the proposed 
+neural  network  pattern  recognition  based  chatter 
+monitoring method is proved to be a potential chatter 
+detection technique with high accuracy and reliability. 
+
+ References 
+[1] J. Tlusty, G. C. Andrews, “A critical review of sensors for 
+unmanned machining”, Annals of the CIRP, 1983, 32 (2), pp. 
+611-622. 
+
+[2]  Y.  S.  Tarng,  T.  C.  Li,  “Detection  and  suppression  of 
+J.  of  Dynamics  Systems, 
+drilling 
+Measurement, and Control, 1994, 116(4), pp. 729-734. 
+
+chatter”,  ASME 
+
+[3] C. Su, J. Hino, and T. Yoshimura,  “Prediction of chatter 
+in  high-speed  milling  by  means  of  fuzzy  neural  networks”, 
+Int. J. of Systems Science, 2000, 31 (10), pp. 1323-1330. 
+
+[4] X. Q. Li, Y. S. Wong, and  A. Y. C. Nee, “Tool wear and 
+chatter detection using the coherence function of two crossed 
+accelerations”, Int. J. Machine Tools  & Manufacture, 1997, 
+37 (4), pp. 425-435. 
+
+[5]  T.  Bailey,  Y.  Ruget,  A.  Spence,  and  M.  A.  Elbestawi, 
+“Open-architecture controller for die and mold machining.”, 
+American  Control  Conference,  Seattle,  Washington,  June 
+1995, pp. 21-23. 
+
+[6]  N.  H.  Abu-Zahra  and  J.  H.  Lange.  Tool  chatter 
+monitoring  in  turning  operations  using  wavelet  analysis  of 
+International  Journal  of  Advanced 
+ultrasound  waves. 
+Manufacturing Technology, 2002, 20 (4), 248-254. 
+
+[7]  E  Soliman,  F.Ismail.  Chatter  detection  by  monitoring 
+spindle  drive  current.  International  Journal  of  Advanced 
+Manufacturing Technology, 1997, 13 (1), 27-34. 
+
+[8]  K.  Jemielniak,  A.  Widota,  “Suppression  of  self–excited 
+vibration  by  the  spindle  speed  variation  method”,  Int.  J. 
+Mach. tool Design and Research, Publisher, 1984, 24 (3), pp. 
+207–214. 
+
+

@@ -1,0 +1,2705 @@
+(19)
+
+(12)
+
+TEPZZ¥_¥9 7ZA_T
+EP 3 139 270 A1
+
+(11)
+
+EUROPEAN PATENT APPLICATION
+published in accordance with Art. 153(4) EPC
+
+(43) Date of publication: 
+
+08.03.2017 Bulletin 2017/10
+
+(21) Application number: 15811909.9
+
+(22) Date of filing: 03.06.2015
+
+(51) Int Cl.:
+
+G06F 9/50 (2006.01)
+
+G06F 17/30 (2006.01)
+
+(86) International application number: 
+
+PCT/CN2015/080677
+
+(87) International publication number: 
+
+WO 2015/196911 (30.12.2015 Gazette 2015/52)
+
+(84) Designated Contracting States: 
+
+AL AT BE BG CH CY CZ DE DK EE ES FI FR GB 
+GR HR HU IE IS IT LI LT LU LV MC MK MT NL NO 
+PL PT RO RS SE SI SK SM TR
+Designated Extension States: 
+BA ME
+Designated Validation States: 
+MA
+
+(72) Inventors:  
+
+• LI, Chen
+
+Shenzhen
+Guangdong 518129 (CN)
+
+• WANG, Fangshan
+
+Shenzhen
+Guangdong 518129 (CN)
+
+(30) Priority: 27.06.2014 CN 201410302143
+
+(71) Applicant: Huawei Technologies Co. Ltd.
+
+Shenzhen, Guangdong 518129 (CN)
+
+(54)
+
+DATA MINING METHOD AND NODE
+
+(57)
+A data mining method and a node are provided.
+The  method  includes:  obtaining  a  predicted  execution
+time of each computing subnode in a current round of
+iterative task, and allocating a corresponding volume of
+task data to the computing subnode according to the pre-
+dicted execution time; after the current round of iterative
+task is executed, collecting execution status information
+of each computing subnode in the current round of iter-
+ative task, and accordingly determining whether the task
+data  volume  of  each  computing  subnode  needs  to  be
+adjusted in a next round of iterative task; and performing
+
+(74) Representative: Körber, Martin Hans
+
+Mitscherlich PartmbB 
+Patent- und Rechtsanwälte 
+Sonnenstrasse 33
+80331 München (DE)
+
+the next round of iterative task according to the adjusted
+task data volume. Therefore, a corresponding volume of
+task data can be allocated according to a capability of
+each computing subnode, and a task data volume of each
+computing  subnode  in  a  current  round  of  task  can  be
+adjusted according to an execution status in a previous
+round.  In  this  way,  some  unnecessary  load  balancing
+processes can be avoided, network consumption can be
+reduced, and data mining performance of a system can
+be improved.
+
+1
+A
+0
+7
+2
+
+ 
+
+9
+3
+1
+
+ 
+
+3
+P
+E
+
+Printed by Jouve, 75001 PARIS (FR)
+
+EP 3 139 270 A1
+
+Description
+
+TECHNICAL FIELD
+
+5
+
+10
+
+15
+
+20
+
+25
+
+30
+
+35
+
+40
+
+45
+
+50
+
+55
+
+[0001] Embodiments of the present invention relate to communications technologies, and in particular, to a data mining
+method and a node.
+
+BACKGROUND
+
+[0002] Big data (big data), or referred to as mega data, refers to data sets involving such a huge volume of data that
+it cannot be fetched, managed, processed, and arranged within a proper time by using a conventional software tool.
+With the advent of the cloud era, big data (Big data) attracts increasing attention, and how to obtain useful information
+and knowledge from big data becomes the focus of the industry. Data mining (Data Mining) is a technology for searching
+for  hidden  information  from  a  large  volume  of  data  by  using  an  algorithm.  The  data  mining  generally  achieves  the
+foregoing objective by using many methods such as statistics, online analysis and processing, information retrieval,
+machine learning, an expert system (relying on past experience and rules), and model identification.
+[0003]
+In a data mining process, modeling and analysis generally need to be performed on massive data. A common
+modeling method includes an iterative machine learning algorithm, such as linear regression, logistic regression, a neural
+network, or  a  decision tree.  A learning  process is  executed on data repeatedly,  to continuously update  a particular
+parameter of a data mining task. Each time a round of iterative computation is complete, an effect of a temporary model
+generated is estimated. When a particular condition is met, an iterative process ends. Otherwise, the iterative process
+is executed repeatedly.
+[0004] However, big data has a feature of a big data volume, which generally reaches a TB (1 TB = 1012 B) or PB (1
+PB = 1000 TB) level, and is beyond a computing capability of a civil computer. Therefore, a high performance computer
+and a distributed cluster are generally used to perform batch processing. That is, a mining task of big data is executed
+in a distributed cluster computing environment by using the foregoing iterative algorithm, and each round of iterative
+computing task is allocated to computing subnodes. When the computing subnodes complete respective computing
+tasks, temporary results of all the subnodes are gathered, and an effect of an obtained combination model is estimated.
+When a particular condition is met, an iterative process ends. Otherwise, a new computing task is reallocated to the
+computing subnodes, and the iterative process is repeated.
+[0005] Since computing subnodes in a distributed cluster may have different computing capabilities, computing re-
+sources cannot be fully used and computing efficiency is reduced. Therefore, to improve performance of an entire mining
+system, in the prior art, a load balancing technology is used. When each round of iterative task is executed, a quantity
+of tasks of each computing subnode is dynamically adjusted according to a load status of the computing subnode. For
+example, in a process of executing an iterative task, when it is found that some computing subnodes have completed
+the iterative task, and some computing subnodes have not completed the iterative task, it is considered that the nodes
+that have completed the task are idle nodes, and the nodes that have not completed the task are overloaded nodes. In
+this case, some task data on the overloaded nodes is transferred to the idle nodes. However, in the prior art, a volume
+of input task data of each computing subnode in each round of iteration is unchanged, load balancing in each round of
+iterative task is independent with respect to a next round of iteration. That is, when the next round of iterative task is
+executed, load balancing is needed to be performed again. Because data needs to be transferred between nodes during
+load balancing, unnecessary network consumption is increased, and data mining performance of a system is reduced.
+
+SUMMARY
+
+[0006] Embodiments of the present invention provide a data mining method and a node, so as to reduce network
+consumption, and improve data mining performance of a system.
+[0007] According to a first aspect, an embodiment of the present invention provides a central node, applied to a data
+mining system, where the central node includes:
+
+a time obtaining unit, configured to obtain a predicted execution time of each computing subnode in the Nth round
+of iterative task;
+an allocation unit, configured to reallocate task data to each computing subnode according to the predicted execution
+time of each computing subnode, where the task data is a part or all of data in an obtained to-be-mined sample data set;
+an information obtaining unit, configured to: after each computing subnode completes the Nth round of iterative task
+according to the allocated task data, if an iterative task has not ended, obtain execution status information of each
+computing subnode in the Nth round of iterative task; and
+a first determining unit, configured to: determine, according to the execution status information of each computing
+
+2
+
+EP 3 139 270 A1
+
+subnode, whether load balancing needs to be performed in the (N+1)th round of iterative task, where if load balancing
+needs to be performed, after 1 is added to a value of N, the step of obtaining a predicted execution time of each
+computing subnode in the Nth round of iterative task to the step of determining, according to the execution status
+information of each computing subnode, whether load balancing needs to be performed in the (N+1)th round of
+iterative task are repeated; and if load balancing does not need to be performed, each computing subnode executes
+the (N+1)th round of iterative task according to the task data that is allocated to the computing subnode in the Nth
+round of iterative task, where N is a positive integer, and a start value of N is 1.
+
+[0008] With reference to the first aspect, in a first possible implementation manner, when N is equal to 1, the time
+obtaining unit is specifically configured to:
+
+obtain the predicted execution time of each computing subnode according to a distribution characteristic parameter
+of the sample data set and a computing resource of each computing subnode, where
+the distribution characteristic parameter of the sample data set includes: an average value, a variance, a quantity
+of different values, and a value range that are of values, in a same field, of data in the sample data set; and
+the computing resource of each computing subnode includes: at least one of a CPU frequency or a memory capacity
+of the computing subnode.
+
+[0009] With reference to the first aspect, in a second possible implementation manner, when N is greater than 1, the
+time obtaining unit is specifically configured to:
+
+use an actual execution time within which each computing subnode executes the (N-1)th round of iterative task as
+the predicted execution time of the computing subnode in the Nth round of iterative task.
+
+[0010] With reference to any one of the first aspect to the second possible implementation manner of the first aspect,
+in a third possible implementation manner, the allocation unit includes:
+
+a node selection unit, configured to determine a computing subnode whose predicted execution time is greater than
+a standard execution time as an overloaded node, and determine a computing subnode whose predicted execution
+time is less than the standard execution time as an idle node;
+a unit for determining a to-be-transferred task volume, configured to obtain a proportion of tasks to be transferred
+from each overloaded node according to a predicted execution time of each overloaded node and the standard
+execution time, and obtain, according to the proportion of tasks to be transferred from each overloaded node, a
+volume of task data that needs to be transferred from each overloaded node;
+a unit for determining a to-be-received task volume, configured to obtain a proportion of tasks to be received by
+each idle node according to a predicted execution time of each idle node and the standard execution time, and
+obtain, according to the proportion of tasks to be received by each idle node, a volume of task data that can be
+received by each idle node; and
+a transfer unit, configured to sequentially transfer out, according to a volume, corresponding to the overloaded node,
+of task data that needs to be transferred, task data of each overloaded node in a descending order of predicted
+execution times of overloaded nodes, and sequentially transfer the task data into at least one idle node, which is
+sequenced in an ascending order of predicted execution times of idle nodes, according to the volume of task data
+that can be received by each idle node, until all task data that needs to be transferred from the overloaded nodes
+is transferred completely.
+
+[0011] With reference to the third possible implementation manner of the first aspect, in a fourth possible implementation
+manner, the unit for determining a to-be-transferred task volume is specifically configured to:
+
+divide a difference between the predicted execution time of each overloaded node and the standard execution time
+by the standard execution time, to obtain the proportion of tasks to be transferred from the overloaded node; and
+multiply a task data volume of task data stored on each overloaded node by the proportion of tasks to be transferred
+from the overloaded node, to obtain the volume of task data that needs to be transferred from the overloaded node; and
+the unit for determining a to-be-received task volume is specifically configured to:
+
+divide an absolute value of a difference between the predicted execution time of each idle node and the standard
+execution time by the standard execution time, to obtain the proportion of tasks to be received by the idle node; and
+multiply a task data volume of task data stored on each idle node by the proportion of tasks to be received by
+the idle node, to obtain the volume of task data that can be received by the idle node.
+
+5
+
+10
+
+15
+
+20
+
+25
+
+30
+
+35
+
+40
+
+45
+
+50
+
+55
+
+3
+
+EP 3 139 270 A1
+
+[0012] With reference to any one of the first aspect to the fourth possible implementation manner of the first aspect,
+in a fifth possible implementation manner, the execution status information of each computing subnode in the Nth round
+of iterative task includes: at least one of an actual execution time, a computing resource usage, or a task data volume
+of each computing subnode in the Nth round of iterative task; and
+the computing resource usage includes: at least one of a CPU usage or a memory usage.
+[0013] With reference to the fifth possible implementation manner of the first aspect, in a sixth possible implementation
+manner, the first determining unit is specifically configured to:
+
+determine, among all the computing subnodes in the Nth round of iterative task, a computing subnode with a longest
+actual execution time and a computing subnode with a shortest actual execution time;
+obtain an actual-execution-time difference proportion between the computing subnode with the longest actual ex-
+ecution time and the computing subnode with the shortest actual execution time; and
+compare the  time difference proportion with  a  preset  difference  proportion  threshold;  and if the time difference
+proportion is less than or equal to the preset difference proportion threshold, determine that load balancing does
+not need to be performed in the (N+1)th round of iterative task; or if the time difference proportion is greater than
+the preset difference proportion threshold, determine that load balancing needs to be performed in the (N+1)th round
+of iterative task.
+
+[0014] With reference to any one of the first aspect to the sixth possible implementation manner of the first aspect, in
+a seventh possible implementation manner, the central node further includes a second determining unit, which is spe-
+cifically configured to:
+
+after each computing subnode completes the Nth round of iterative task, determine whether N is equal to a preset
+maximum iteration quantity; and if N is less than the maximum iteration quantity, determine that the iterative task
+has not ended; or if N is equal to the maximum iteration quantity, determine that the iterative task ends; or
+after each computing subnode completes the Nth round of iterative task, determine whether an output result of the
+Nth round of iteration meets a convergence condition; and if the convergence condition is not met, determine that
+the iterative task has not ended; or if the convergence condition is met, determine that the iterative task ends.
+
+[0015] According to a second aspect, an embodiment of the present invention provides another central node, applied
+to a data mining system, where the central node includes:
+
+a time obtaining unit, configured to obtain a predicted execution time of each computing subnode in the Nth round
+of iterative task according to a time learning model;
+a  first  determining  unit,  configured  to  determine,  according  to  the  predicted  execution  time  of  each  computing
+subnode, whether load balancing needs to be performed in the Nth round of iterative task;
+an allocation unit, configured to: when load balancing needs to be performed, reallocate task data to each computing
+subnode according to the predicted execution time of each computing subnode, where when load balancing does
+not need to be performed, no task data is reallocated to each computing subnode, and the task data is a part or all
+of data in an obtained to-be-mined sample data set;
+an information obtaining unit, configured to: after each computing subnode completes the Nth round of iterative task
+according to the allocated task data, obtain execution status information of each computing subnode in the Nth round
+of iterative task; and
+an update unit, configured to update a training parameter of the time learning model according to the execution
+status information of each computing subnode, where if the iterative task has not ended, after 1 is added to a value
+of N, the step of obtaining a predicted execution time of each computing subnode in the Nth round of iterative task
+according to a time learning model to the step of updating the time learning model according to the execution status
+information of each computing subnode are repeated by using an updated time learning model.
+
+[0016] With reference to the second aspect, in a first possible implementation manner, the time learning model is
+established according to at least one parameter of an actual execution time, a computing resource usage, or a historical
+task data volume.
+[0017] With reference to the first possible implementation manner of the second aspect, in a second possible imple-
+mentation manner, the time learning model includes:
+[0018] Predicted execution time of a computing subnode i in the Nth round of iterative task = a * Actual execution time
+of the computing subnode i in the (N-1)th round of iterative task + b * Computing resource usage of the computing
+subnode i in the (N-1)th round of iterative task + c * Historical task data volume of the computing subnode i in the (N-
+1)th round of iterative task + C, where
+
+5
+
+10
+
+15
+
+20
+
+25
+
+30
+
+35
+
+40
+
+45
+
+50
+
+55
+
+4
+
+EP 3 139 270 A1
+
+a is an execution time training parameter, b is a computing resource usage training parameter, c is a historical task
+volume training parameter, C is a training constant, and i is a positive integer; the computing resource usage includes
+at least one of a CPU usage or a memory usage; and the historical task data volume of the computing subnode i in the
+(N-1)th round of iterative task is a volume of task data allocated to the computing subnode i in the (N-1)th round of iterative
+task.
+[0019] With reference to any one of the second aspect to the second possible implementation manner of the second
+aspect, in a third possible implementation manner, the first determining unit is specifically configured to:
+
+determine, among all the computing subnodes in the Nth round of iterative task, a computing subnode with a longest
+predicted execution time and a computing subnode with a shortest predicted execution time;
+obtain a predicted-execution-time difference proportion between the computing subnode with the longest predicted
+execution time and the computing subnode with the shortest predicted execution time; and
+compare the  time difference proportion with  a  preset  difference  proportion  threshold;  and if the time difference
+proportion is less than or equal to the preset difference proportion threshold, determine that load balancing does
+not need to be performed in the Nth round of iterative task; or if the time difference proportion is greater than the
+preset difference proportion threshold, determine that load balancing needs to be performed in the Nth round of
+iterative task.
+
+[0020] With reference to any one of the second aspect to the third possible implementation manner of the second
+aspect, in a fourth possible implementation manner, the allocation unit includes:
+
+a node selection unit, configured to determine a computing subnode whose predicted execution time is greater than
+a standard execution time as an overloaded node, and determine a computing subnode whose predicted execution
+time is less than the standard execution time as an idle node;
+a unit for determining a to-be-transferred task volume, configured to obtain a proportion of tasks to be transferred
+from each overloaded node according to a predicted execution time of each overloaded node and the standard
+execution time, and obtain, according to the proportion of tasks to be transferred from each overloaded node, a
+volume of task data that needs to be transferred from each overloaded node;
+a unit for determining a to-be-received task volume, configured to obtain a proportion of tasks to be received by
+each idle node according to a predicted execution time of each idle node and the standard execution time, and
+obtain, according to the proportion of tasks to be received by each idle node, a volume of task data that can be
+received by each idle node; and
+a transfer unit, configured to sequentially transfer out, according to a volume, corresponding to the overloaded node,
+of task data that needs to be transferred, task data of each overloaded node in a descending order of predicted
+execution times of overloaded nodes, and sequentially transfer the task data into at least one idle node, which is
+sequenced in an ascending order of predicted execution times of idle nodes, according to the volume of task data
+that can be received by each idle node, until all task data that needs to be transferred from the overloaded nodes
+is transferred completely.
+
+[0021] With reference to the fourth possible implementation manner of the second aspect, in a fifth possible imple-
+mentation manner, the unit for determining a to-be-transferred task volume is specifically configured to:
+
+divide a difference between the predicted execution time of each overloaded node and the standard execution time
+by the standard execution time, to obtain the proportion of tasks to be transferred from the overloaded node; and
+multiply a task data volume of task data stored on each overloaded node by the proportion of tasks to be transferred
+from the overloaded node, to obtain the volume of task data that needs to be transferred from the overloaded node; and
+the unit for determining a to-be-received task volume is specifically configured to:
+
+divide an absolute value of a difference between the predicted execution time of each idle node and the standard
+execution time by the standard execution time, to obtain the proportion of tasks to be received by the idle node; and
+multiply a task data volume of task data stored on each idle node by the proportion of tasks to be received by
+the idle node, to obtain the volume of task data that can be received by the idle node.
+
+[0022] With reference to any one of the second aspect to the fifth possible implementation manner of the second
+aspect, in a sixth possible implementation manner, the execution status information of each computing subnode in the
+Nth round of iterative task includes: at least one of an actual execution time, a computing resource usage, or a task data
+volume of each computing subnode in the Nth round of iterative task; and
+the computing resource usage includes: at least one of a CPU usage or a memory usage.
+
+5
+
+10
+
+15
+
+20
+
+25
+
+30
+
+35
+
+40
+
+45
+
+50
+
+55
+
+5
+
+EP 3 139 270 A1
+
+[0023] With reference to the first possible implementation manner of the second aspect, in a seventh possible imple-
+mentation manner, the update unit is specifically configured to:
+
+update at least one parameter of the execution time training parameter, the computing resource usage training
+parameter, or the historical task data volume training parameter of the time learning model according to the execution
+status information of each computing subnode.
+
+[0024] With reference to any one of the second aspect to the seventh possible implementation manner of the second
+aspect, in an eighth possible implementation manner, the central node further includes a second determining unit, which
+is specifically configured to:
+
+after each computing subnode completes the Nth round of iterative task, determine whether N is equal to a preset
+maximum iteration quantity; and if N is less than the maximum iteration quantity, determine that the iterative task
+has not ended; or if N is equal to the maximum iteration quantity, determine that the iterative task ends; or
+after each computing subnode completes the Nth round of iterative task, determine whether an output result of the
+Nth round of iteration meets a convergence condition; and if the convergence condition is not met, determine that
+the iterative task has not ended; or if the convergence condition is met, determine that the iterative task ends.
+
+[0025] According to a third aspect, a data mining system is provided, where the system includes:
+
+the central node according to any one of the first aspect to the eighth possible implementation manner of the second
+aspect, and at least two computing subnodes.
+
+[0026] According to a fourth aspect, a data mining method is provided, where the method includes:
+
+obtaining a predicted execution time of each computing subnode in the Nth round of iterative task;
+reallocating task data to each computing subnode according to the predicted execution time of each computing
+subnode, where the task data is a part or all of data in an obtained to-be-mined sample data set;
+after each computing subnode completes the Nth round of iterative task according to the allocated task data, if an
+iterative task has not ended, obtaining execution status information of each computing subnode in the Nth round of
+iterative task; and
+determining, according to the execution status information of each computing subnode, whether load balancing
+needs to be performed in the (N+1)th round of iterative task, where if load balancing needs to be performed, after
+1 is added to a value of N, the step of obtaining a predicted execution time of each computing subnode in the Nth
+round of iterative task to the step of determining, according to the execution status information of each computing
+subnode, whether load balancing needs to be performed in the (N+1)th round of iterative task are repeated; and if
+load balancing does not need to be performed, each computing subnode executes the (N+1)th round of iterative
+task according to the task data that is allocated to the computing subnode in the Nth round of iterative task, where
+N is a positive integer, and a start value of N is 1.
+
+[0027] With reference to the fourth aspect, in a first possible implementation manner, when N is equal to 1, the obtaining
+a predicted execution time of each computing subnode in the Nth round of iterative task includes:
+
+obtaining the predicted execution time of each computing subnode according to a distribution characteristic parameter
+of the sample data set and a computing resource of each computing subnode, where
+the distribution characteristic parameter of the sample data set includes: an average value, a variance, a quantity
+of different values, and a value range that are of values, in a same field, of data in the sample data set; and
+the computing resource of each computing subnode includes: at least one of a CPU frequency or a memory capacity
+of the computing subnode.
+
+[0028] With reference to the fourth aspect, in a second possible implementation manner, when N is greater than 1,
+the obtaining a predicted execution time of each computing subnode in the Nth round of iterative task includes:
+
+using an actual execution time within which each computing subnode executes the (N-1)th round of iterative task
+as the predicted execution time of the computing subnode in the Nth round of iterative task.
+
+[0029] With reference to any one of the fourth aspect to the second possible implementation manner of the fourth
+aspect, in a third possible implementation manner, the reallocating task data to each computing subnode according to
+
+5
+
+10
+
+15
+
+20
+
+25
+
+30
+
+35
+
+40
+
+45
+
+50
+
+55
+
+6
+
+the predicted execution time of each computing subnode includes:
+
+EP 3 139 270 A1
+
+5
+
+10
+
+15
+
+20
+
+25
+
+30
+
+35
+
+40
+
+45
+
+50
+
+55
+
+determining a computing subnode whose predicted execution time is greater than a standard execution time as an
+overloaded node, and determining a computing subnode whose predicted execution time is less than the standard
+execution time as an idle node;
+obtaining a proportion of tasks to be transferred from each overloaded node according to a predicted execution time
+of each overloaded node and the standard execution time, and obtaining, according to the proportion of tasks to be
+transferred from each overloaded node, a volume of task data that needs to be transferred from each overloaded node;
+obtaining a proportion of tasks to be received by each idle node according to a predicted execution time of each
+idle node and the standard execution time, and obtaining, according to the proportion of tasks to be received by
+each idle node, a volume of task data that can be received by each idle node; and
+sequentially transferring out, according to a volume, corresponding to the overloaded node, of task data that needs
+to be transferred, task data of each overloaded node in a descending order of predicted execution times of overloaded
+nodes, and sequentially transferring the task data into at least one idle node, which is sequenced in an ascending
+order of predicted execution times of idle nodes, according to the volume of task data that can be received by each
+idle node, until all task data that needs to be transferred from the overloaded nodes is transferred completely.
+
+[0030] With reference to the third possible implementation manner of the fourth aspect, in a fourth possible implemen-
+tation manner, the obtaining a proportion of tasks to be transferred from each overloaded node according to a predicted
+execution time of each overloaded node and the standard execution time, and obtaining, according to the proportion of
+tasks  to  be  transferred  from  each  overloaded  node,  a  volume  of  task  data  that  needs  to  be  transferred  from  each
+overloaded node includes:
+
+dividing a difference between the predicted execution time of each overloaded node and the standard execution
+time by the standard execution time, to obtain the proportion of tasks to be transferred from the overloaded node; and
+multiplying a task data volume of task data stored on each overloaded node by the proportion of tasks to be transferred
+from the overloaded node, to obtain the volume of task data that needs to be transferred from the overloaded node; and
+the obtaining a proportion of tasks to be received by each idle node according to a predicted execution time of each
+idle node and the standard execution time, and obtaining, according to the proportion of tasks to be received by
+each idle node, a volume of task data that can be received by each idle node includes:
+
+dividing an absolute value  of a  difference between the  predicted execution  time  of each  idle node and the
+standard execution time by the standard execution time, to obtain the proportion of tasks to be received by the
+idle node; and
+multiplying a task data volume of task data stored on each idle node by the proportion of tasks to be received
+by the idle node, to obtain the volume of task data that can be received by the idle node.
+
+[0031] With reference to any one of the fourth aspect to the fourth possible implementation manner of the fourth aspect,
+in a fifth possible implementation manner, the execution status information of each computing subnode in the Nth round
+of iterative task includes: at least one of an actual execution time, a computing resource usage, or a task data volume
+of each computing subnode in the Nth round of iterative task; and
+the computing resource usage includes: at least one of a CPU usage or a memory usage.
+[0032] With reference to the fifth possible implementation manner of the fourth aspect, in a sixth possible implementation
+manner, the determining, according to the execution status information of each computing subnode, whether load bal-
+ancing needs to be performed in the (N+1)th round of iterative task includes:
+
+determining, among all the computing subnodes in the  Nth round of iterative task, a computing subnode with a
+longest actual execution time and a computing subnode with a shortest actual execution time;
+obtaining an actual-execution-time difference proportion between the computing subnode with the longest actual
+execution time and the computing subnode with the shortest actual execution time; and
+comparing the time difference proportion with a preset difference proportion threshold; and if the time difference
+proportion is less than or equal to the preset difference proportion threshold, determining that load balancing does
+not need to be performed in the (N+1)th round of iterative task; or if the time difference proportion is greater than
+the preset difference proportion threshold, determining that load balancing needs to be performed in the (N+1)th
+round of iterative task.
+
+[0033] With reference to any one of the fourth aspect to the sixth possible implementation manner of the fourth aspect,
+in a seventh possible implementation manner, a method for determining whether the iterative task ends includes:
+
+7
+
+EP 3 139 270 A1
+
+after each computing subnode completes the Nth round of iterative task, determining whether N is equal to a preset
+maximum iteration quantity; and if N is less than the maximum iteration quantity, determining that the iterative task
+has not ended; or if N is equal to the maximum iteration quantity, determining that the iterative task ends; or
+after each computing subnode completes the Nth round of iterative task, determining whether an output result of
+the Nth round of iteration meets a convergence condition; and if the convergence condition is not met, determining
+that the iterative task has not ended; or if the convergence condition is met, determining that the iterative task ends.
+
+[0034] According to a fifth aspect, a data mining method is provided, where the method includes:
+
+obtaining a predicted execution time of each computing subnode in the Nth round of iterative task according to a
+time learning model;
+determining, according to the predicted execution time of each computing subnode, whether load balancing needs
+to be performed in the Nth round of iterative task;
+when load balancing needs to be performed, reallocating task data to each computing subnode according to the
+predicted execution time of each computing subnode, where when load balancing does not need to be performed,
+no task data is reallocated to each computing subnode, and the task data is a part or all of data in an obtained to-
+be-mined sample data set;
+after each computing subnode completes the Nth round of iterative task according to the allocated task data, obtaining
+execution status information of each computing subnode in the Nth round of iterative task; and
+updating a training parameter  of the time learning model according  to the execution status information of each
+computing subnode, where if the iterative task has not ended, after 1 is added to a value of N, the step of obtaining
+a predicted execution time of each computing subnode in the Nth round of iterative task according to a time learning
+model to the step of updating the time learning model according to the execution status information of each computing
+subnode are repeated by using an updated time learning model, N is a positive integer, and a start value of N is 1.
+
+[0035] With reference to the fifth aspect, in a first possible implementation manner, the time learning model is estab-
+lished according to at least one parameter of an actual execution time, a computing resource usage, or a historical task
+data volume.
+[0036] With reference to the first possible implementation manner of the fifth aspect, in a second possible implemen-
+tation manner, the time learning model includes:
+[0037] Predicted execution time of a computing subnode i in the Nth round of iterative task = a * Actual execution time
+of the computing subnode i in the (N-1)th round of iterative task + b * Computing resource usage of the computing
+subnode i in the (N-1)th round of iterative task + c * Historical task data volume of the computing subnode i in the (N-
+1)th round of iterative task + C, where
+a is an execution time training parameter, b is a computing resource usage training parameter, c is a historical task
+volume training parameter, C is a training constant, and i is a positive integer; the computing resource usage includes
+at least one of a CPU usage or a memory usage; and the historical task data volume of the computing subnode i in the
+(N-1)th round of iterative task is a volume of task data allocated to the computing subnode i in the (N-1)th round of iterative
+task.
+[0038] With reference to any one of the fifth aspect to the second possible implementation manner of the fifth aspect,
+in a third possible implementation manner, the determining, according to the predicted execution time of each computing
+subnode, whether load balancing needs to be performed in the Nth round of iterative task includes:
+
+determining, among all the computing subnodes in the  Nth round of iterative task, a computing subnode with a
+longest predicted execution time and a computing subnode with a shortest predicted execution time;
+obtaining a predicted-execution-time difference proportion between the computing subnode with the longest pre-
+dicted execution time and the computing subnode with the shortest predicted execution time; and
+comparing the time difference proportion with a preset difference proportion threshold; and if the time difference
+proportion is less than or equal to the preset difference proportion threshold, determining that load balancing does
+not need to be performed in the Nth round of iterative task; or if the time difference proportion is greater than the
+preset difference proportion threshold, determining that load balancing needs to be performed in the Nth round of
+iterative task.
+
+[0039] With reference to any one of the fifth aspect to the third possible implementation manner of the fifth aspect, in
+a fourth possible implementation manner, the reallocating task data to each computing subnode according to the predicted
+execution time of each computing subnode includes:
+
+determining a computing subnode whose predicted execution time is greater than a standard execution time as an
+
+5
+
+10
+
+15
+
+20
+
+25
+
+30
+
+35
+
+40
+
+45
+
+50
+
+55
+
+8
+
+EP 3 139 270 A1
+
+overloaded node, and determining a computing subnode whose predicted execution time is less than the standard
+execution time as an idle node;
+obtaining a proportion of tasks to be transferred from each overloaded node according to a predicted execution time
+of each overloaded node and the standard execution time, and obtaining, according to the proportion of tasks to be
+transferred from each overloaded node, a volume of task data that needs to be transferred from each overloaded node;
+obtaining a proportion of tasks to be received by each idle node according to a predicted execution time of each
+idle node and the standard execution time, and obtaining, according to the proportion of tasks to be received by
+each idle node, a volume of task data that can be received by each idle node; and
+sequentially transferring out, according to a volume, corresponding to the overloaded node, of task data that needs
+to be transferred, task data of each overloaded node in a descending order of predicted execution times of overloaded
+nodes, and sequentially transferring the task data into at least one idle node, which is sequenced in an ascending
+order of predicted execution times of idle nodes, according to the volume of task data that can be received by each
+idle node, until all task data that needs to be transferred from the overloaded nodes is transferred completely.
+
+[0040] With reference to the fourth possible implementation manner of the fifth aspect, in a fifth possible implementation
+manner,  the  obtaining  a  proportion  of  tasks to  be  transferred  from  each  overloaded  node  according  to  a  predicted
+execution time of each overloaded node and the standard execution time, and obtaining, according to the proportion of
+tasks  to  be  transferred  from  each  overloaded  node,  a  volume  of  task  data  that  needs  to  be  transferred  from  each
+overloaded node includes:
+
+dividing a difference between the predicted execution time of each overloaded node and the standard execution
+time by the standard execution time, to obtain the proportion of tasks to be transferred from the overloaded node; and
+multiplying a task data volume of task data stored on each overloaded node by the proportion of tasks to be transferred
+from the overloaded node, to obtain the volume of task data that needs to be transferred from the overloaded node; and
+the obtaining a proportion of tasks to be received by each idle node according to a predicted execution time of each
+idle node and the standard execution time, and obtaining, according to the proportion of tasks to be received by
+each idle node, a volume of task data that can be received by each idle node includes:
+
+dividing an absolute value  of a  difference between the  predicted execution  time  of each  idle node and the
+standard execution time by the standard execution time, to obtain the proportion of tasks to be received by the
+idle node; and
+multiplying a task data volume of task data stored on each idle node by the proportion of tasks to be received
+by the idle node, to obtain the volume of task data that can be received by the idle node.
+
+[0041] With reference to any one of the fifth aspect to the fifth possible implementation manner of the fifth aspect, in
+a sixth possible implementation manner, the execution status information of each computing subnode in the Nth round
+of iterative task includes: at least one of an actual execution time, a computing resource usage, or a task data volume
+of each computing subnode in the Nth round of iterative task; and
+the computing resource usage includes: at least one of a CPU usage or a memory usage.
+[0042] With reference to the second possible implementation manner of the fifth aspect, in a seventh possible imple-
+mentation  manner,  the  updating  a  training  parameter  of  the  time  learning  model  according  to  the  execution  status
+information of each computing subnode includes:
+
+updating at least one parameter of the execution time training parameter, the computing resource usage training
+parameter, or the historical task data volume training parameter of the time learning model according to the execution
+status information of each computing subnode.
+
+[0043] With reference to any one of the fifth aspect to the seventh possible implementation manner of the fifth aspect,
+in an eighth possible implementation manner, a method for determining whether the iterative task ends includes:
+
+after each computing subnode completes the Nth round of iterative task, determining whether N is equal to a preset
+maximum iteration quantity; and if N is less than the maximum iteration quantity, determining that the iterative task
+has not ended; or if N is equal to the maximum iteration quantity, determining that the iterative task ends; or
+after each computing subnode completes the Nth round of iterative task, determining whether an output result of
+the Nth round of iteration meets a convergence condition; and if the convergence condition is not met, determining
+that the iterative task has not ended; or if the convergence condition is met, determining that the iterative task ends.
+
+[0044] The embodiments of the present invention provide a data mining method and a node. A predicted execution
+
+5
+
+10
+
+15
+
+20
+
+25
+
+30
+
+35
+
+40
+
+45
+
+50
+
+55
+
+9
+
+EP 3 139 270 A1
+
+time of each computing subnode in a current round of iterative task is obtained, and a corresponding volume of task
+data is allocated to the computing subnode according to the predicted execution time; after the current round of iterative
+task is executed, execution status information of each computing subnode in the current round of iterative task is collected,
+and whether the task data volume of each computing subnode needs to be adjusted in a next round of iterative task is
+determined accordingly; and the next round of iterative task is performed according to the adjusted task data volume.
+Alternatively, a predicted execution time of each computing subnode in a current round of iterative task is obtained
+according to a time learning model, and whether load balancing needs to be performed in the current round of iterative
+task is determined according to the predicted execution time; if load balancing needs to be performed, a volume of task
+data allocated to each computing subnode is adjusted; after the current round of iterative task is executed, execution
+status information of each computing subnode in the current round of iterative task is collected, and a training parameter
+of the time learning model is updated accordingly; and the foregoing process is repeated in a next round of iteration.
+Compared with the prior art in which load balancing is executed in each round of iterative task process, in the embodiments
+of the present invention, a corresponding volume of task data can be allocated according to a capability of each computing
+subnode, and a task data volume of each computing subnode in a current round of task can be adjusted according to
+an execution status in a previous round. In this way, some unnecessary load balancing processes can be avoided,
+network consumption can be reduced, and data mining performance of a system can be improved.
+
+BRIEF DESCRIPTION OF DRAWINGS
+
+[0045] To describe the technical solutions in the embodiments of the present invention or in the prior art more clearly,
+the following briefly describes the accompanying drawings required for describing the embodiments or the prior art.
+Apparently, the accompanying drawings in the following description show some embodiments of the present invention,
+and persons of ordinary skill in the art may still derive other drawings from these accompanying drawings without creative
+efforts.
+
+FIG. 1 is a schematic structural diagram of a central node according to an embodiment of the present invention;
+FIG. 2 is a schematic structural diagram of an allocation unit of a central node according to an embodiment of the
+present invention;
+FIG. 3 is another schematic structural diagram of a central node according to an embodiment of the present invention;
+FIG. 4 is a schematic structural diagram of another central node according to an embodiment of the present invention;
+FIG. 5 is a schematic structural diagram of an allocation unit of another central node according to an embodiment
+of the present invention;
+FIG. 6 is another schematic structural diagram of another central node according to an embodiment of the present
+invention;
+FIG. 7 is a schematic structural diagram of still another central node according to an embodiment of the present
+invention;
+FIG. 8 is a schematic structural diagram of yet another central node according to an embodiment of the present
+invention;
+FIG. 9 is a schematic structural diagram of a data mining system according to an embodiment of the present invention;
+FIG. 10 is a schematic flowchart of a data mining method according to an embodiment of the present invention;
+FIG. 11 is a schematic flowchart of another data mining method according to an embodiment of the present invention;
+FIG. 12 is a schematic flowchart of still another data mining method according to an embodiment of the present
+invention;
+FIG. 13 is a schematic flowchart of execution of an iterative task according to an embodiment of the present invention;
+and
+FIG. 14 is a schematic flowchart of yet another data mining method according to an embodiment of the present
+invention.
+
+DESCRIPTION OF EMBODIMENTS
+
+[0046] To make  the  objectives,  technical  solutions,  and  advantages  of  the  embodiments  of  the present  invention
+clearer, the following clearly and completely describes the technical solutions in the embodiments of the present invention
+with reference to the accompanying drawings in the embodiments of the present invention. Apparently, the described
+embodiments are some but not all of the embodiments of the present invention. All other embodiments obtained by
+persons of ordinary skill in the art based on the embodiments of the present invention without creative efforts shall fall
+within the protection scope of the present invention.
+[0047] An embodiment of the present invention provides a central node 1, which may be applied to a data mining
+system. As shown in FIG. 1, the central node 1 includes:
+
+5
+
+10
+
+15
+
+20
+
+25
+
+30
+
+35
+
+40
+
+45
+
+50
+
+55
+
+10
+
+EP 3 139 270 A1
+
+a time obtaining unit 11, configured to obtain a predicted execution time of each computing subnode in the Nth round
+of iterative task;
+an allocation unit 12, configured to reallocate task data to each computing subnode  according to  the predicted
+execution time of each computing subnode, where the task data is a part or all of data in an obtained to-be-mined
+sample data set;
+an information obtaining unit 13, configured to: after each computing subnode completes the Nth round of iterative
+task according to the allocated task data, if an iterative task has not ended, obtain execution status information of
+each computing subnode in the Nth round of iterative task; and
+a first determining unit 14, configured to: determine, according to the execution status information of each computing
+subnode, whether load balancing needs to be performed in the (N+1)th round of iterative task, where if load balancing
+needs to be performed, after 1 is added to a value of N, the step of obtaining a predicted execution time of each
+computing subnode in the Nth round of iterative task to the step of determining, according to the execution status
+information of each computing subnode, whether load balancing needs to be performed in the (N+1)th round of
+iterative task are repeated; and if load balancing does not need to be performed, each computing subnode executes
+the (N+1)th round of iterative task according to the task data that is allocated to the computing subnode in the Nth
+round of iterative task, where N is a positive integer, and a start value of N is 1.
+
+[0048] Optionally, when N is equal to 1, the time obtaining unit 11 may be specifically configured to:
+
+obtain the predicted execution time of each computing subnode according to a distribution characteristic parameter
+of the sample data set and a computing resource of each computing subnode, where
+the distribution characteristic parameter of the sample data set includes: an average value, a variance, a quantity
+of different values, and a value range that are of values, in a same field, of data in the sample data set; and
+the computing resource of each computing subnode includes: at least one of a CPU frequency or a memory capacity
+of the computing subnode.
+
+[0049] Optionally, when N is greater than 1, the time obtaining unit 11 may be specifically configured to:
+
+use an actual execution time within which each computing subnode executes the (N-1)th round of iterative task as
+the predicted execution time of the computing subnode in the Nth round of iterative task.
+
+[0050] Optionally, as shown in FIG. 2, the allocation unit 12 may include:
+
+a node selection unit 121, configured to determine a computing subnode whose predicted execution time is greater
+than a  standard execution  time as an  overloaded  node,  and  determine  a computing  subnode  whose  predicted
+execution time is less than the standard execution time as an idle node;
+a unit 122 for determining a to-be-transferred task volume, configured to obtain a proportion of tasks to be transferred
+from each overloaded node according to a predicted execution time of each overloaded node and the standard
+execution time, and obtain, according to the proportion of tasks to be transferred from each overloaded node, a
+volume of task data that needs to be transferred from each overloaded node;
+a unit 123 for determining a to-be-received task volume, configured to obtain a proportion of tasks to be received
+by each idle node according to a predicted execution time of each idle node and the standard execution time, and
+obtain, according to the proportion of tasks to be received by each idle node, a volume of task data that can be
+received by each idle node; and
+a transfer unit 124, configured to sequentially transfer out, according to a volume, corresponding to the overloaded
+node, of task data that needs to be transferred, task data of each overloaded node in a descending order of predicted
+execution times of overloaded nodes, and sequentially transfer the task data into at least one idle node, which is
+sequenced in an ascending order of predicted execution times of idle nodes, according to the volume of task data
+that can be received by each idle node, until all task data that needs to be transferred from the overloaded nodes
+is transferred completely.
+
+[0051] Optionally, the unit 122 for determining a to-be-transferred task volume may be specifically configured to:
+
+divide a difference between the predicted execution time of each overloaded node and the standard execution time
+by the standard execution time, to obtain the proportion of tasks to be transferred from the overloaded node; and
+multiply a task data volume of task data stored on each overloaded node by the proportion of tasks to be transferred
+from the overloaded node, to obtain the volume of task data that needs to be transferred from the overloaded node; and
+the unit 123 for determining a to-be-received task volume may be specifically configured to:
+
+5
+
+10
+
+15
+
+20
+
+25
+
+30
+
+35
+
+40
+
+45
+
+50
+
+55
+
+11
+
+EP 3 139 270 A1
+
+divide an absolute value of a difference between the predicted execution time of each idle node and the standard
+execution time by the standard execution time, to obtain the proportion of tasks to be received by the idle node; and
+multiply a task data volume of task data stored on each idle node by the proportion of tasks to be received by
+the idle node, to obtain the volume of task data that can be received by the idle node.
+
+[0052] Optionally, the execution status information of each computing subnode in the Nth round of iterative task includes:
+at least one of an actual execution time, a computing resource usage, or a task data volume of each computing subnode
+in the Nth round of iterative task; and
+the computing resource usage includes: at least one of a CPU usage or a memory usage.
+[0053] Optionally, the first determining unit 124 may be specifically configured to:
+
+determine, among all the computing subnodes in the Nth round of iterative task, a computing subnode with a longest
+actual execution time and a computing subnode with a shortest actual execution time;
+obtain an actual-execution-time difference proportion between the computing subnode with the longest actual ex-
+ecution time and the computing subnode with the shortest actual execution time; and
+compare the  time difference proportion with  a  preset  difference  proportion  threshold;  and if the time difference
+proportion is less than or equal to the preset difference proportion threshold, determine that load balancing does
+not need to be performed in the (N+1)th round of iterative task; or if the time difference proportion is greater than
+the preset difference proportion threshold, determine that load balancing needs to be performed in the (N+1)th round
+of iterative task.
+
+[0054] Optionally, as shown in FIG. 3, the central node 1 may further include a second determining unit 125, which
+may be specifically configured to:
+
+after each computing subnode completes the Nth round of iterative task, determine whether N is equal to a preset
+maximum iteration quantity; and if N is less than the maximum iteration quantity, determine that the iterative task
+has not ended; or if N is equal to the maximum iteration quantity, determine that the iterative task ends; or
+after each computing subnode completes the Nth round of iterative task, determine whether an output result of the
+Nth round of iteration meets a convergence condition; and if the convergence condition is not met, determine that
+the iterative task has not ended; or if the convergence condition is met, determine that the iterative task ends.
+
+[0055] This embodiment of the present invention provides a central node. A predicted execution time of each computing
+subnode in a current round of iterative task is obtained, and a corresponding volume of task data is allocated to the
+computing subnode according to  the predicted  execution  time; after  the current round  of iterative  task is  executed,
+execution status information of each computing subnode in the current round of iterative task is collected, and whether
+the task data volume of each computing subnode needs to be adjusted in a next round of iterative task is determined
+accordingly. Compared with the prior art in which load balancing is executed in each round of iterative task process, in
+this embodiment of the present invention, a corresponding volume of task data can be allocated according to a capability
+of each computing subnode, and a task data volume of each computing subnode in a current round of task can be
+adjusted according to an execution status in a previous round. In this way, some unnecessary load balancing processes
+can be avoided, network consumption can be reduced, and data mining performance of a system can be improved.
+[0056] An embodiment of the present invention provides another central node 2, which may be applied to a data mining
+system. As shown in FIG. 4, the central node 2 includes:
+
+a time obtaining unit 21, configured to obtain a predicted execution time of each computing subnode in the Nth round
+of iterative task according to a time learning model;
+a first determining unit 22, configured to determine, according to the predicted execution time of each computing
+subnode, whether load balancing needs to be performed in the Nth round of iterative task;
+an  allocation  unit  23,  configured  to:  when  load  balancing  needs  to  be  performed,  reallocate  task  data  to  each
+computing subnode according to the predicted execution time of each computing subnode, where when load bal-
+ancing does not need to be performed, no task data is reallocated to each computing subnode, and the task data
+is a part or all of data in an obtained to-be-mined sample data set;
+an information obtaining unit 24, configured to: after each computing subnode completes the Nth round of iterative
+task according to the allocated task data, obtain execution status information of each computing subnode in the Nth
+round of iterative task; and
+an update unit 25, configured to update a training parameter of the time learning model according to the execution
+status information of each computing subnode, where if the iterative task has not ended, after 1 is added to a value
+of N, the step of obtaining a predicted execution time of each computing subnode in the Nth round of iterative task
+
+5
+
+10
+
+15
+
+20
+
+25
+
+30
+
+35
+
+40
+
+45
+
+50
+
+55
+
+12
+
+EP 3 139 270 A1
+
+according to a time learning model to the step of updating the time learning model according to the execution status
+information of each computing subnode are repeated by using an updated time learning model.
+
+[0057] Optionally, the time learning model may be established according to at least one parameter of an actual execution
+time, a computing resource usage, or a historical task data volume.
+[0058] Optionally, the time learning model may include:
+[0059] Predicted execution time of a computing subnode i in the Nth round of iterative task = a * Actual execution time
+of the computing subnode i in the (N-1)th round of iterative task + b * Computing resource usage of the computing
+subnode i in the (N-1)th round of iterative task + c * Historical task data volume of the computing subnode i in the (N-
+1)th round of iterative task + C, where
+a is an execution time training parameter, b is a computing resource usage training parameter, c is a historical task
+volume training parameter, C is a training constant, and i is a positive integer; the computing resource usage includes
+at least one of a CPU usage or a memory usage; and the historical task data volume of the computing subnode i in the
+(N-1)th round of iterative task is a volume of task data allocated to the computing subnode i in the (N-1)th round of iterative
+task.
+[0060] Optionally, the first determining unit 22 may be specifically configured to:
+
+determine, among all the computing subnodes in the Nth round of iterative task, a computing subnode with a longest
+predicted execution time and a computing subnode with a shortest predicted execution time;
+obtain a predicted-execution-time difference proportion between the computing subnode with the longest predicted
+execution time and the computing subnode with the shortest predicted execution time; and
+compare the  time difference proportion with  a  preset  difference  proportion  threshold;  and if the time difference
+proportion is less than or equal to the preset difference proportion threshold, determine that load balancing does
+not need to be performed in the Nth round of iterative task; or if the time difference proportion is greater than the
+preset difference proportion threshold, determine that load balancing needs to be performed in the Nth round of
+iterative task.
+
+[0061] Optionally, as shown in FIG. 5, the allocation unit 23 may include:
+
+a node selection unit 231, configured to determine a computing subnode whose predicted execution time is greater
+than a  standard execution  time as an  overloaded  node,  and  determine  a computing  subnode  whose  predicted
+execution time is less than the standard execution time as an idle node;
+a unit 232 for determining a to-be-transferred task volume, configured to obtain a proportion of tasks to be transferred
+from each overloaded node according to a predicted execution time of each overloaded node and the standard
+execution time, and obtain, according to the proportion of tasks to be transferred from each overloaded node, a
+volume of task data that needs to be transferred from each overloaded node;
+a unit 233 for determining a to-be-received task volume, configured to obtain a proportion of tasks to be received
+by each idle node according to a predicted execution time of each idle node and the standard execution time, and
+obtain, according to the proportion of tasks to be received by each idle node, a volume of task data that can be
+received by each idle node; and
+a transfer unit 234, configured to sequentially transfer out, according to a volume, corresponding to the overloaded
+node, of task data that needs to be transferred, task data of each overloaded node in a descending order of predicted
+execution times of overloaded nodes, and sequentially transfer the task data into at least one idle node, which is
+sequenced in an ascending order of predicted execution times of idle nodes, according to the volume of task data
+that can be received by each idle node, until all task data that needs to be transferred from the overloaded nodes
+is transferred completely.
+
+[0062] Optionally, the unit 232 for determining a to-be-transferred task volume may be specifically configured to:
+
+divide a difference between the predicted execution time of each overloaded node and the standard execution time
+by the standard execution time, to obtain the proportion of tasks to be transferred from the overloaded node; and
+multiply a task data volume of task data stored on each overloaded node by the proportion of tasks to be transferred
+from the overloaded node, to obtain the volume of task data that needs to be transferred from the overloaded node; and
+the unit 233 for determining a to-be-received task volume may be specifically configured to:
+
+divide an absolute value of a difference between the predicted execution time of each idle node and the standard
+execution time by the standard execution time, to obtain the proportion of tasks to be received by the idle node; and
+multiply a task data volume of task data stored on each idle node by the proportion of tasks to be received by
+
+5
+
+10
+
+15
+
+20
+
+25
+
+30
+
+35
+
+40
+
+45
+
+50
+
+55
+
+13
+
+EP 3 139 270 A1
+
+the idle node, to obtain the volume of task data that can be received by the idle node.
+
+[0063] Optionally, the execution status information of each computing subnode in the Nth round of iterative task includes:
+at least one of an actual execution time, a computing resource usage, or a task data volume of each computing subnode
+in the Nth round of iterative task; and
+the computing resource usage includes: at least one of a CPU usage or a memory usage.
+[0064] Optionally, the update unit 25 may be specifically configured to:
+
+update at least one parameter of the execution time training parameter, the computing resource usage training
+parameter, or the historical task data volume training parameter of the time learning model according to the execution
+status information of each computing subnode.
+
+[0065] Optionally, as shown in FIG. 6, the central node 2 may further include a second determining unit 26, which may
+be specifically configured to:
+
+after each computing subnode completes the Nth round of iterative task, determine whether N is equal to a preset
+maximum iteration quantity; and if N is less than the maximum iteration quantity, determine that the iterative task
+has not ended; or if N is equal to the maximum iteration quantity, determine that the iterative task ends; or
+after each computing subnode completes the Nth round of iterative task, determine whether an output result of the
+Nth round of iteration meets a convergence condition; and if the convergence condition is not met, determine that
+the iterative task has not ended; or if the convergence condition is met, determine that the iterative task ends.
+
+[0066] This embodiment of the present invention provides a central node. A predicted execution time of each computing
+subnode in a current round of iterative task is obtained according to a time learning model, and whether load balancing
+needs to be performed in the current round of iterative task is determined according to the predicted execution time; if
+load balancing needs to be performed, a volume of task data allocated to each computing subnode is adjusted; after
+the current round of iterative task is executed, execution status information of each computing subnode in the current
+round of iterative task is collected, and a training parameter of the time learning model is updated accordingly; and the
+foregoing process is repeated in a next round of iteration. Compared with the prior art in which load balancing is executed
+in each round of iterative task process, in this embodiment of the present invention, a corresponding volume of task data
+can  be  allocated  according to a capability of  each computing subnode, and a task data volume of  each computing
+subnode in a current round of task can be adjusted according to an execution status in a previous round. In this way,
+some unnecessary load balancing processes can be avoided, network consumption can be reduced, and data mining
+performance of a system can be improved.
+[0067] An embodiment of the present invention provides a central node 3, which may be applied to a data mining
+system. As shown in FIG. 7, the central node 3 includes: a processor 31, a memory 32, and an input/output interface
+33. The processor 31, the memory 32, and the input/output interface 33 are connected by using a bus 34. The input/output
+interface 33 is configured to interact with another network element. The memory 32 is configured to store a computer
+program 321. The processor 31 is configured to execute the computer program 321, so as to:
+
+obtain a predicted execution time of each computing subnode in the Nth round of iterative task;
+reallocate  task  data  to  each  computing  subnode  according  to  the  predicted  execution  time  of  each  computing
+subnode, where the task data is a part or all of data in an obtained to-be-mined sample data set;
+after each computing subnode completes the Nth round of iterative task according to the allocated task data, if an
+iterative task has not ended, obtain execution status information of each computing subnode in the Nth round of
+iterative task; and
+determine, according to the execution status information of each computing subnode, whether load balancing needs
+to be performed in the (N+1)th round of iterative task, where if load balancing needs to be performed, after 1 is added
+to a value of N, the step of obtaining a predicted execution time of each computing subnode in the Nth round of
+iterative task to the step of determining, according to the execution status information of each computing subnode,
+whether load balancing needs to be performed in the (N+1)th round of iterative task are repeated; and if load balancing
+does not need to be performed, each computing subnode executes the (N+1)th round of iterative task according to
+the task data that is allocated to the computing subnode in the Nth round of iterative task, where N is a positive
+integer, and a start value of N is 1.
+
+[0068] Optionally, when N is equal to 1, the processor 31 may be specifically configured to execute the computer
+program 321 to:
+
+5
+
+10
+
+15
+
+20
+
+25
+
+30
+
+35
+
+40
+
+45
+
+50
+
+55
+
+14
+
+EP 3 139 270 A1
+
+obtain the predicted execution time of each computing subnode according to a distribution characteristic parameter
+of the sample data set and a computing resource of each computing subnode, where
+the distribution characteristic parameter of the sample data set includes: an average value, a variance, a quantity
+of different values, and a value range that are of values, in a same field, of data in the sample data set; and
+the computing resource of each computing subnode includes: at least one of a CPU frequency or a memory capacity
+of the computing subnode.
+
+[0069] Optionally, when N is greater than 1, the processor 31 may be specifically configured to execute the computer
+program 321 to:
+
+use an actual execution time within which each computing subnode executes the (N-1)th round of iterative task as
+the predicted execution time of the computing subnode in the Nth round of iterative task.
+
+[0070] Optionally, the processor 31 may be specifically configured to execute the computer program 321 to:
+
+determine a computing subnode whose predicted execution time is greater than a standard execution time as an
+overloaded node, and determine a computing subnode whose predicted execution time is less than the standard
+execution time as an idle node;
+obtain a proportion of tasks to be transferred from each overloaded node according to a predicted execution time
+of each overloaded node and the standard execution time, and obtain, according to the proportion of tasks to be
+transferred from each overloaded node, a volume of task data that needs to be transferred from each overloaded node;
+obtain a proportion of tasks to be received by each idle node according to a predicted execution time of each idle
+node and the standard execution time, and obtain, according to the proportion of tasks to be received by each idle
+node, a volume of task data that can be received by each idle node; and
+sequentially transfer out, according to a volume, corresponding to the overloaded node, of task data that needs to
+be transferred, task data of each overloaded node in a descending order of predicted execution times of overloaded
+nodes, and sequentially transfer the task data into at least one idle node, which is sequenced in an ascending order
+of predicted execution times of idle nodes, according to the volume of task data that can be received by each idle
+node, until all task data that needs to be transferred from the overloaded nodes is transferred completely.
+
+[0071] Optionally, the processor 31 may be configured to execute the computer program 321 to:
+
+divide a difference between the predicted execution time of each overloaded node and the standard execution time
+by the standard execution time, to obtain the proportion of tasks to be transferred from the overloaded node; and
+multiply a task data volume of task data stored on each overloaded node by the proportion of tasks to be transferred
+from the overloaded node, to obtain the volume of task data that needs to be transferred from the overloaded node; and
+the processor 31 may be configured to execute the computer program 321 to:
+
+divide an absolute value of a difference between the predicted execution time of each idle node and the standard
+execution time by the standard execution time, to obtain the proportion of tasks to be received by the idle node; and
+multiply a task data volume of task data stored on each idle node by the proportion of tasks to be received by
+the idle node, to obtain the volume of task data that can be received by the idle node.
+
+[0072] Optionally, the execution status information of each computing subnode in the Nth round of iterative task includes:
+at least one of an actual execution time, a computing resource usage, or a task data volume of each computing subnode
+in the Nth round of iterative task; and
+the computing resource usage includes: at least one of a CPU usage or a memory usage.
+[0073] Optionally, the processor 31 may be specifically configured to execute the computer program 321 to:
+
+determine, among all the computing subnodes in the Nth round of iterative task, a computing subnode with a longest
+actual execution time and a computing subnode with a shortest actual execution time;
+obtain an actual-execution-time difference proportion between the computing subnode with the longest actual ex-
+ecution time and the computing subnode with the shortest actual execution time; and
+compare the  time difference proportion with  a  preset  difference  proportion  threshold;  and if the time difference
+proportion is less than or equal to the preset difference proportion threshold, determine that load balancing does
+not need to be performed in the (N+1)th round of iterative task; or if the time difference proportion is greater than
+the preset difference proportion threshold, determine that load balancing needs to be performed in the (N+1)th round
+of iterative task.
+
+5
+
+10
+
+15
+
+20
+
+25
+
+30
+
+35
+
+40
+
+45
+
+50
+
+55
+
+15
+
+EP 3 139 270 A1
+
+[0074] Optionally, the processor 31 may be further specifically configured to execute the computer program 321 to:
+
+after each computing subnode completes the Nth round of iterative task, determine whether N is equal to a preset
+maximum iteration quantity; and if N is less than the maximum iteration quantity, determine that the iterative task
+has not ended; or if N is equal to the maximum iteration quantity, determine that the iterative task ends; or
+after each computing subnode completes the Nth round of iterative task, determine whether an output result of the
+Nth round of iteration meets a convergence condition; and if the convergence condition is not met, determine that
+the iterative task has not ended; or if the convergence condition is met, determine that the iterative task ends.
+
+[0075] This embodiment of the present invention provides a central node. A predicted execution time of each computing
+subnode in a current round of iterative task is obtained, and a corresponding volume of task data is allocated to the
+computing subnode according to  the predicted  execution  time; after  the current round  of iterative  task is  executed,
+execution status information of each computing subnode in the current round of iterative task is collected, and whether
+the task data volume of each computing subnode needs to be adjusted in a next round of iterative task is determined
+accordingly. Compared with the prior art in which load balancing is executed in each round of iterative task process, in
+this embodiment of the present invention, a corresponding volume of task data can be allocated according to a capability
+of each computing subnode, and a task data volume of each computing subnode in a current round of task can be
+adjusted according to an execution status in a previous round. In this way, some unnecessary load balancing processes
+can be avoided, network consumption can be reduced, and data mining performance of a system can be improved.
+[0076] An embodiment of the present invention provides a central node 4, which may be applied to a data mining
+system. As shown in FIG. 8, the central node 4 includes: a processor 41, a memory 42, and an input/output interface
+43. The processor 41, the memory 42, and the input/output interface 43 are connected by using a bus 44. The input/output
+interface 43 is configured to interact with another network element. The memory 42 is configured to store a computer
+program 421. The processor 41 is configured to execute a computer program 421, so as to:
+
+obtain a predicted execution time of each computing subnode in the Nth round of iterative task according to a time
+learning model;
+determine, according to the predicted execution time of each computing subnode, whether load balancing needs
+to be performed in the Nth round of iterative task;
+when load balancing needs to be performed, reallocate task data to each computing subnode according to the
+predicted execution time of each computing subnode, where when load balancing does not need to be performed,
+no task data is reallocated to each computing subnode, and the task data is a part or all of data in an obtained to-
+be-mined sample data set;
+after each computing subnode completes the Nth round of iterative task according to the allocated task data, obtain
+execution status information of each computing subnode in the Nth round of iterative task; and
+update a training parameter of the time learning model according to the execution status information of each com-
+puting subnode, where if the iterative task has not ended, after 1 is added to a value of N, the step of obtaining a
+predicted execution time of each computing subnode in the Nth round of iterative task according to a time learning
+model to the step of updating the time learning model according to the execution status information of each computing
+subnode are repeated by using an updated time learning model, N is a positive integer, and a start value of N is 1.
+
+[0077] Optionally, the time learning model may be established according to at least one parameter of an actual execution
+time, a computing resource usage, or a historical task data volume.
+[0078] Optionally, the time learning model may include:
+[0079] Predicted execution time of a computing subnode i in the Nth round of iterative task = a * Actual execution time
+of the computing subnode i in the (N-1)th round of iterative task + b * Computing resource usage of the computing
+subnode i in the (N-1)th round of iterative task + c * Historical task data volume of the computing subnode i in the (N-
+1)th round of iterative task + C, where
+a is an execution time training parameter, b is a computing resource usage training parameter, c is a historical task
+volume training parameter, C is a training constant, and i is a positive integer; the computing resource usage includes
+at least one of a CPU usage or a memory usage; and the historical task data volume of the computing subnode i in the
+(N-1)th round of iterative task is a volume of task data allocated to the computing subnode i in the (N-1)th round of iterative
+task.
+[0080] Optionally, the processor 41 may be specifically configured to execute the computer program 421 to:
+
+determine, among all the computing subnodes in the Nth round of iterative task, a computing subnode with a longest
+predicted execution time and a computing subnode with a shortest predicted execution time;
+obtain a predicted-execution-time difference proportion between the computing subnode with the longest predicted
+
+5
+
+10
+
+15
+
+20
+
+25
+
+30
+
+35
+
+40
+
+45
+
+50
+
+55
+
+16
+
+EP 3 139 270 A1
+
+execution time and the computing subnode with the shortest predicted execution time; and
+compare the  time difference proportion with  a  preset  difference  proportion  threshold;  and if the time difference
+proportion is less than or equal to the preset difference proportion threshold, determine that load balancing does
+not need to be performed in the Nth round of iterative task; or if the time difference proportion is greater than the
+preset difference proportion threshold, determine that load balancing needs to be performed in the Nth round of
+iterative task.
+
+[0081] Optionally, the processor 41 may be specifically configured to execute the computer program 421 to:
+
+determine a computing subnode whose predicted execution time is greater than a standard execution time as an
+overloaded node, and determine a computing subnode whose predicted execution time is less than the standard
+execution time as an idle node;
+obtain a proportion of tasks to be transferred from each overloaded node according to a predicted execution time
+of each overloaded node and the standard execution time, and obtain, according to the proportion of tasks to be
+transferred from each overloaded node, a volume of task data that needs to be transferred from each overloaded node;
+obtain a proportion of tasks to be received by each idle node according to a predicted execution time of each idle
+node and the standard execution time, and obtain, according to the proportion of tasks to be received by each idle
+node, a volume of task data that can be received by each idle node; and
+sequentially transfer out, according to a volume, corresponding to the overloaded node, of task data that needs to
+be transferred, task data of each overloaded node in a descending order of predicted execution times of overloaded
+nodes, and sequentially transfer the task data into at least one idle node, which is sequenced in an ascending order
+of predicted execution times of idle nodes, according to the volume of task data that can be received by each idle
+node, until all task data that needs to be transferred from the overloaded nodes is transferred completely.
+
+5
+
+10
+
+15
+
+20
+
+25
+
+[0082] Optionally, the processor 41 may be specifically configured to execute the computer program 421 to:
+
+30
+
+35
+
+40
+
+45
+
+50
+
+55
+
+divide a difference between the predicted execution time of each overloaded node and the standard execution time
+by the standard execution time, to obtain the proportion of tasks to be transferred from the overloaded node; and
+multiply a task data volume of task data stored on each overloaded node by the proportion of tasks to be transferred
+from the overloaded node, to obtain the volume of task data that needs to be transferred from the overloaded node; and
+the processor 41 may be specifically configured to execute the computer program 421 to:
+
+divide an absolute value of a difference between the predicted execution time of each idle node and the standard
+execution time by the standard execution time, to obtain the proportion of tasks to be received by the idle node; and
+multiply a task data volume of task data stored on each idle node by the proportion of tasks to be received by
+the idle node, to obtain the volume of task data that can be received by the idle node.
+
+[0083] Optionally, the execution status information of each computing subnode in the Nth round of iterative task may
+include: at least one of an actual execution time, a computing resource usage, or a task data volume of each computing
+subnode in the Nth round of iterative task; and
+the task volume is a quantity of data subblocks in the Nth round of iterative task, and the computing resource usage
+includes: at least one of a CPU usage or a memory usage.
+[0084] Optionally, the processor 41 may be specifically configured to execute the computer program 421 to:
+
+update at least one parameter of the execution time training parameter, the computing resource usage training
+parameter, or the historical task data volume training parameter of the time learning model according to the execution
+status information of each computing subnode.
+
+[0085] Optionally, the processor 41 may be further specifically configured to execute the computer program 421 to:
+
+after each computing subnode completes the Nth round of iterative task, determine whether N is equal to a preset
+maximum iteration quantity; and if N is less than the maximum iteration quantity, determine that the iterative task
+has not ended; or if N is equal to the maximum iteration quantity, determine that the iterative task ends; or
+after each computing subnode completes the Nth round of iterative task, determine whether an output result of the
+Nth round of iteration meets a convergence condition; and if the convergence condition is not met, determine that
+the iterative task has not ended; or if the convergence condition is met, determine that the iterative task ends.
+
+[0086] This embodiment of the present invention provides a central node. A predicted execution time of each computing
+
+17
+
+EP 3 139 270 A1
+
+subnode in a current round of iterative task is obtained according to a time learning model, and whether load balancing
+needs to be performed in the current round of iterative task is determined according to the predicted execution time; if
+load balancing needs to be performed, a volume of task data allocated to each computing subnode is adjusted; after
+the current round of iterative task is executed, execution status information of each computing subnode in the current
+round of iterative task is collected, and a training parameter of the time learning model is updated accordingly; and the
+foregoing process is repeated in a next round of iteration. Compared with the prior art in which load balancing is executed
+in each round of iterative task process, in this embodiment of the present invention, a corresponding volume of task data
+can  be  allocated  according to a capability of  each computing subnode, and a task data volume of  each computing
+subnode in a current round of task can be adjusted according to an execution status in a previous round. In this way,
+some unnecessary load balancing processes can be avoided, network consumption can be reduced, and data mining
+performance of a system can be improved.
+[0087] An embodiment of the present invention provides a data mining system. As shown in FIG. 9, the system includes:
+
+any one of the central nodes in the foregoing embodiments and at least two computing subnodes, where a memory
+is disposed in each computing subnode.
+
+[0088]
+It should be noted that, any one of the foregoing central nodes and the data mining system provided in the
+embodiments may be configured to implement the following method embodiments. For working processes and working
+principles of the units in the embodiments, refer to descriptions in the following method embodiments.
+[0089] An embodiment of the present invention provides a data mining method. As shown in FIG. 10, the method
+includes the following steps:
+
+S101: Obtain a predicted execution time of each computing subnode in the Nth round of iterative task.
+S102: Reallocate task data to each computing subnode according to the predicted execution time of each computing
+subnode, where the task data is a part or all of data in an obtained to-be-mined sample data set.
+S103: After each computing subnode completes the Nth round of iterative task according to the allocated task data,
+if an iterative task has not ended, obtain execution status information of each computing subnode in the Nth round
+of iterative task.
+S104: Determine, according to the execution status information of each computing subnode, whether load balancing
+needs to be performed in the (N+1)th round of iterative task, where if load balancing needs to be performed, after
+1 is added to a value of N, S101 to S104 are repeated; and if load balancing does not need to be performed, each
+computing subnode executes the (N+1)th round of iterative task according to the task data that is allocated to the
+computing subnode in the Nth round of iterative task, where N is a positive integer, and a start value of N is 1.
+
+[0090] This embodiment further provides another data mining method. As shown in FIG. 11, the method includes the
+following steps:
+
+S201: Obtain a predicted execution time of each computing subnode in the Nth round of iterative task according to
+a time learning model.
+S202: Determine, according to the predicted execution time of each computing subnode, whether load balancing
+needs to be performed in the Nth round of iterative task.
+S203: When load balancing needs to be performed, reallocate task data to each computing subnode according to
+the predicted execution time of each computing subnode, where when load balancing does not need to be performed,
+no task data is reallocated to each computing subnode, and the task data is a part or all of data in an obtained to-
+be-mined sample data set.
+S204: After each computing subnode completes the Nth round of iterative task according to the allocated task data,
+obtain execution status information of each computing subnode in the Nth round of iterative task.
+S205: Update a training parameter of the time learning model according to the execution status information of each
+computing subnode, where if the iterative task has not ended, after 1 is added to a value of N, S201 to S205 are
+repeated by using an updated time learning model.
+
+[0091] This embodiment of the present invention provides a data mining method. A predicted execution time of each
+computing subnode in a current round of iterative task is obtained, and a corresponding volume of task data is allocated
+to the computing subnode according to the predicted execution time; after the current round of iterative task is executed,
+execution status information of each computing subnode in the current round of iterative task is collected, and whether
+the task data volume of each computing subnode needs to be adjusted in a next round of iterative task is determined
+accordingly; and the next round of iterative task is performed according to the adjusted task data volume. Alternatively,
+a predicted execution time of each computing subnode in a current round of iterative task is obtained according to a
+
+5
+
+10
+
+15
+
+20
+
+25
+
+30
+
+35
+
+40
+
+45
+
+50
+
+55
+
+18
+
+EP 3 139 270 A1
+
+time learning model, and whether load balancing needs to be performed in the current round of iterative task is determined
+according to the predicted execution time; if load balancing needs to be performed, a volume of task data allocated to
+each computing subnode is adjusted; after the current round of iterative task is executed, execution status information
+of each computing subnode in the current round of iterative task is collected, and a training parameter of the time learning
+model is updated accordingly; and the foregoing process is repeated in a next round of iteration. Compared with the
+prior art in which load balancing is executed in each round of iterative task process, in this embodiment of the present
+invention, a corresponding volume of task data can be allocated according to a capability of each computing subnode,
+and a task data volume of each computing subnode in a current round of task can be adjusted according to an execution
+status in a previous round. In this way, some unnecessary load balancing processes can be avoided, network consumption
+can be reduced, and data mining performance of a system can be improved.
+[0092] To make persons skilled in the art understand the technical solution provided in this embodiment of the present
+invention more clearly, the data mining method provided in this embodiment of the present invention is described below
+in detail by using a specific embodiment. As shown in FIG. 12, the method includes the following steps.
+[0093] S301: Obtain a to-be-mined sample data set.
+[0094] For example, a data set is imported, as a sample data set, from an external data source to a data mining system
+(briefly referred to as a mining system below). A common external data source may be a data warehouse, a database,
+open database connectivity (Open Database Connectivity, ODBC), and a file stored in a file system. The imported data
+set may consist of massive unprocessed data, and may be in a list form.
+[0095] After the sample data set is obtained, the sample data set is first divided into multiple data subblocks according
+to a preset rule, and the data subblocks are used as task data initially allocated to computing subnodes in the mining
+system, and are stored in the computing subnodes. The preset rule may be: evenly dividing the sample data set into
+data blocks of a same data volume and allocating the data blocks to the computing subnodes. For example, if the sample
+data set includes 10  million lines of  data to be allocated to  10 computing subnodes, 1 million  lines of data may be
+allocated to each computing subnode. Alternatively, division may be performed according to a computing resource (a
+CPU frequency, a memory capacity, or the like) of each computing subnode. For example, division may be performed
+according to proportions of memory capacities of the computing subnodes. Then, task data obtained after the division
+is stored in a storage device of a corresponding computing subnode, where the storage device may be a hard disk, or
+may be a memory. If the task data is stored in a hard disk, when a mining task starts, to-be-processed data needs to
+be read in a memory for a mining process.
+[0096] S302: Obtain a predicted execution time of each computing subnode in the Nth round of iterative task, where
+N is a positive integer, and a start value of N is 1.
+[0097] When N is equal to 1, that is, when the first round of iterative task of a mining task starts, because the iterative
+task is executed for the first time, an execution time of the current round needs to be pre-estimated. Therefore, a predicted
+execution time in the first round may be obtained in the following manner:
+[0098] The predicted execution time of each computing subnode is obtained according to a distribution characteristic
+parameter of the sample data set and a computing resource of each computing subnode. The distribution characteristic
+parameter of the sample data set may include: an average value, a variance, a quantity of different values, and a value
+range that are of values, in a same field, of data in the sample data set. For example, using the sample data set in a list
+form as an example, values in a same column are values in a same field. When an average value, a variance, a value
+range, a quantity of different values of all the values in the column are obtained, a distribution characteristic parameter
+of data in the field in the sample data set is obtained. Likewise, distribution characteristic parameters of the entire sample
+data set may be obtained. The computing resource of each computing subnode may include: at least one of a CPU
+frequency or a memory capacity of the computing subnode.
+[0099] Exemplarily, the predicted execution time of the computing subnode may be obtained by multiplying the quantity
+of different values by an empirical coefficient of a preset algorithm (which may be a complexity degree of the algorithm)
+and then dividing the product by an operational frequency of a CPU of the computing subnode. The preset algorithm
+may be selected according to an actual need, which is not limited in this embodiment. The calculation method is only
+an example, and is included in this embodiment but this embodiment is not limited thereto.
+[0100] When N is greater than 1, that is, when a non-first round of iterative task of the mining task is executed, an
+actual execution time within which each computing subnode executes the (N-1)th round of iterative task may be used
+as the predicted execution time of the computing subnode in the Nth round of iterative task.
+[0101]
+In addition, besides the distribution characteristic parameter of the sample data set and the computing resource
+of each computing subnode, the predicted execution time may be obtained further by using one or more of parameters
+such as a task data volume of each computing subnode in the (N-1)th round of iterative task, a hardware configuration
+of the computing subnode, and network load.
+[0102] S303: Reallocate task  data to each computing subnode according to the predicted execution time of each
+computing subnode.
+[0103] Specifically, this step includes:
+
+5
+
+10
+
+15
+
+20
+
+25
+
+30
+
+35
+
+40
+
+45
+
+50
+
+55
+
+19
+
+EP 3 139 270 A1
+
+determining a computing subnode whose predicted execution time is greater than a standard execution time as an
+overloaded node, and determining a computing subnode whose predicted execution time is less than the standard
+execution time as an idle node;
+obtaining a proportion of tasks to be transferred from each overloaded node according to a predicted execution time
+of each overloaded node and the standard execution time, and obtaining, according to the proportion of tasks to be
+transferred from each overloaded node, a volume of task data that needs to be transferred from each overloaded node;
+obtaining a proportion of tasks to be received by each idle node according to a predicted execution time of each
+idle node and the standard execution time, and obtaining, according to the proportion of tasks to be received by
+each idle node, a volume of task data that can be received by each idle node; and
+sequentially transferring out, according to a volume, corresponding to the overloaded node, of task data that needs
+to be transferred, task data of each overloaded node in a descending order of predicted execution times of overloaded
+nodes, and sequentially transferring the task data into at least one idle node, which is sequenced in an ascending
+order of predicted execution times of idle nodes, according to the volume of task data that can be received by each
+idle node, until all task data that needs to be transferred from the overloaded nodes is transferred completely.
+
+[0104] The obtaining a volume of task data that needs to be transferred from each overloaded node may include:
+
+dividing a difference between the predicted execution time of each overloaded node and the standard execution
+time by the standard execution time, to obtain the proportion of tasks to be transferred from the overloaded node; and
+multiplying a task data volume of task data stored on each overloaded node by the proportion of tasks to be transferred
+from the overloaded node, to obtain the volume of task data that needs to be transferred from the overloaded node.
+
+[0105] The obtaining a volume of task data that can be received by each idle node may include:
+
+dividing an absolute value of a difference between the predicted execution time of each idle node and the standard
+execution time by the standard execution time, to obtain the proportion of tasks to be received by the idle node; and
+multiplying a task data volume of task data stored on each idle node by the proportion of tasks to be received by
+the idle node, to obtain the volume of task data that can be received by the idle node.
+
+[0106] Exemplarily, it is assumed that the mining system includes eight computing subnodes: a node 1, a node 2, a
+node 3, a node 4, a node 5, a node 6, a node 7, and a node 8. It is assumed that a standard execution time is 100s,
+predicted execution times of the nodes 1 to 8 are shown in Table 1, and volumes of task data stored on the nodes 1 to
+8 are shown in Table 2.
+
+Node
+
+Node 1 Node 2 Node 3 Node 4 Node 5 Node 6 Node 7 Node 8
+
+Predicted execution time (s)
+
+130
+
+120
+
+100
+
+110
+
+100
+
+60
+
+80
+
+90
+
+Table 1
+
+Node
+
+Node 1 Node 2 Node 3 Node 4 Node 5 Node 6 Node 7 Node 8
+
+Task data volume (ten thousands lines)
+
+1000
+
+900
+
+800
+
+850
+
+700
+
+1000
+
+600
+
+950
+
+Table 2
+
+[0107] According to the predicted execution times of the computing subnodes in Table 1, it may be determined that
+the node 1, the node 2, and the node 4 are overloaded nodes, and that the node 6, the node 7, and the node 8 are idle nodes.
+[0108]
+It can be obtained through calculation that a proportion of tasks to be transferred from the node 1 is equal to
+(130 - 100) 4 100 x 100% = 30%, and then 30% may be multiplied by 10 million lines to obtain that a volume of task
+data that needs to be transferred from the node 1 is 3 million lines. Likewise, it may be obtained that volumes of task
+data that needs to be transferred from the node 2 and the node 4 are 1.8 million lines and 0.85 million lines respectively.
+A proportion of tasks to be received by the node 6 is equal to (100 - 60) 4 100 x 100% = 40%, and then 40% is multiplied
+by 10 million lines to obtain that a volume of task data that can be received by the node 1 is 4 million lines. Likewise, it
+may be obtained that volumes of task data that can be received by the node 7 and the node 8 are 1.2 million lines and
+0.95 million lines respectively.
+[0109] Then, data is transferred. It may be seen from Table 1 that a descending order of predicted execution times of
+the node 1, the node 2, the node 4, the node 6, the node 7, and the node 8 is: the node 1, the node 2, the node 4, the
+
+5
+
+10
+
+15
+
+20
+
+25
+
+30
+
+35
+
+40
+
+45
+
+50
+
+55
+
+20
+
+EP 3 139 270 A1
+
+node 8, the node 7, and the node 6. Therefore, when data is transferred, first, task data that needs to be transferred
+from the node 1 is preferentially received by the node 6. It may be known according to the foregoing calculation that,
+after all the task data that needs to be transferred from the node 1 is received by the node 6, the node 6 still has free
+space. Then task data that needs to be transferred from the node 2 is received by the node 6. When space for a volume
+of task data that can be received by the node 6 is used up, task data that needs to be transferred from the node 2 is
+received by the node 7, and so on, until all task data that needs to be transferred from the node 1, the node 2, and the
+node 4 is transferred completely.
+[0110] S304: Each computing subnode executes the Nth round of iterative task according to the allocated task data.
+[0111] Exemplarily, the iterative task may be executed by using a Mahout platform (an extensible machine learning
+and data mining platform of the Apache Software Foundation), whose architecture is based on a MapReduce frame and
+whose computing process includes two steps: Map (map) and Reduce (reduce). Executing Map is to obtain an interme-
+diate result based on a key-value pair according to data, and executing Reduce is to gather key-value pairs to generate
+an output result. As shown in FIG. 13, in a process of executing an iterative task by using Mahout based on MapReduce,
+the two steps: Map and Reduce are performed repeatedly. Each time a MapReduce task is executed completely, its
+result is output, and then an effect of a generated model is checked. If a requirement of the iterative task is met, the
+generated model is a final result (which may be understood as that a model parameter is adjusted to an optimal value).
+Otherwise, a next round of iteration is executed, and Map and Reduce steps are executed repeatedly.
+[0112] S305: After the Nth round of iterative task is completed, determine whether the iterative task ends. If the iterative
+task has not ended, S306 is performed; otherwise, S308 is performed.
+[0113] Exemplarily, a method for determining whether the iterative task ends may include:
+
+after each computing subnode completes the Nth round of iterative task, determining whether N is equal to a preset
+maximum iteration quantity; and if N is less than the maximum iteration quantity, determining that the iterative task
+has not ended; or if N is equal to the maximum iteration quantity, determining that the iterative task ends.
+
+[0114] For example, the maximum iteration quantity is set to 200. If N is less than 200, the iterative task has not ended.
+If N is equal to 200, it is determined that the iterative task ends.
+[0115] Alternatively, after each computing subnode completes the Nth round of iterative task, it is determined whether
+an output result of the Nth round of iteration meets a convergence condition (for example, whether a parameter of a
+model used in the iteration has been adjusted to an optimal parameter). If the convergence condition is not met, it is
+determined that the iterative task has not ended. If the convergence condition is met, it is determined that the iterative
+task ends.
+[0116] S306: Obtain execution status information of each computing subnode in the Nth round of iterative task.
+[0117] The execution status information of each computing subnode may be: at least one of an actual execution time,
+a computing resource usage, or a task data volume of each computing subnode in the Nth round of iterative task; the
+computing resource usage includes: at least one of a CPU usage or a memory usage.
+[0118] S307: Determine, according to the execution  status information of each computing  subnode, whether load
+balancing needs to be performed in the (N+1)th round of iterative task. If load balancing needs to be performed, after 1
+is added to a value of N, S302 to S307 are repeated. If load balancing does not need to be performed, each computing
+subnode directly executes  the (N+1)th round  of iterative task according  to  the task data  allocated  to  the computing
+subnode in the Nth round of iterative task.
+[0119] Exemplarily, a computing subnode with a longest actual execution time and a computing subnode with a shortest
+actual execution time in the Nth round of iterative task may be first determined among all the computing subnodes;
+an actual-execution-time difference proportion between the computing subnode with the longest actual execution time
+and the computing subnode with the shortest actual execution time is obtained; and
+the  time  difference  proportion  is  compared  with  a  preset  difference  proportion  threshold;  and  if  the  time  difference
+proportion is less than or equal to the preset difference proportion threshold, it is determined that load balancing does
+not need to be performed in the (N+1)th iterative task; or if the time difference proportion is greater than the preset
+difference proportion threshold, it is determined that load balancing needs to be performed in the (N+1)th iterative task.
+[0120] For example, the difference proportion threshold is set to 10%. Assuming that in the Nth round of iterative task,
+an actual execution time of the computing subnode with the longest actual execution time is 120s, and an actual execution
+time of the computing subnode with the shortest actual execution time is 100s, a difference proportion between the
+actual execution times of the two computing subnodes is 20%, which is greater than the difference proportion threshold.
+Therefore, it is determined that load balancing needs to be performed in the (N+1)th round of iterative task. For another
+example, in the Nth round of iterative task, an actual execution time of the computing subnode with the longest actual
+execution time is 105s, and an actual execution time of the computing subnode with the shortest actual execution time
+is 100s; a difference proportion between the actual execution times of the two computing subnodes is 5%, which is less
+than the difference proportion threshold. Therefore, it is determined that load balancing does not need to be performed
+
+5
+
+10
+
+15
+
+20
+
+25
+
+30
+
+35
+
+40
+
+45
+
+50
+
+55
+
+21
+
+EP 3 139 270 A1
+
+In  another  implementation  manner  of  the  data  mining  method  provided  in  this  embodiment  of  the  present
+
+in the (N+1)th round of iterative task.
+[0121] S308: End the data mining task.
+[0122]
+invention, as shown in FIG. 14, the method includes the following steps.
+[0123] S401: Obtain a to-be-mined sample data set (this step is completely the same as S301; refer to S301 for details,
+which are not provided herein again).
+[0124] S402: Obtain a predicted execution time of each computing subnode in the Nth round of iterative task according
+to a time learning model.
+[0125] Exemplarily, the time learning model may be established according to at least one parameter of an actual
+execution time, a computing resource usage, or a historical task data volume.
+[0126] For example, the model may include:
+[0127] Predicted execution time of a computing subnode i in the Nth round of iterative task = a * Actual execution time
+of the computing subnode i in the (N-1)th round of iterative task + b * Computing resource usage of the computing
+subnode i in the (N-1)th round of iterative task + c * Historical task data volume of the computing subnode i in the (N-
+1)th round of iterative task + C, where
+a is an execution time training parameter, b is a computing resource usage training parameter, c is a historical task
+volume training parameter, C is a training constant, and i is a positive integer; the computing resource usage includes
+at least one of a CPU usage or a memory usage; the historical task data volume of the computing subnode i in the (N-
+1)th round of iterative task is a volume of task data allocated to the computing subnode i in the (N-1)th round of iterative
+task; and the computing subnode i is any computing subnode in the data mining system.
+[0128] For example, it is assumed that a is set to 0.95, b is set to 10, c is set to 0 (which may be understood as that
+a historical task data volume training parameter is not considered), and C is set to 0.5. It is assumed that the actual
+execution time of the computing subnode i in the (N-1)th round of iterative task is 100s. The computing resource usage
+is a CPU usage of the computing subnode i, and is assumed to be 50%. Therefore, the predicted execution time of the
+computing subnode i in the Nth round of iterative task is equal to 0.95 x 100 + 10 x 50% + 0.5 = 100.5s.
+[0129]
+In  addition,  besides the  actual execution  time, the  computing resource usage, and the  historical  task data
+volume, the predicted execution time may be obtained further by using one or more of parameters such as a task data
+volume of each computing subnode in the (N-1)th round of iterative task, a hardware configuration of the computing
+subnode, and network load.
+[0130] S403: Determine, according to the predicted execution time of each computing subnode, whether load balancing
+needs to be performed in the Nth round of iterative task. If load balancing needs to be performed, S404 is performed;
+otherwise, S405 is directly performed.
+[0131] Specifically, this step may include:
+
+determining, among all the computing subnodes in the  Nth round of iterative task, a computing subnode with a
+longest predicted execution time and a computing subnode with a shortest predicted execution time;
+obtaining a predicted-execution-time difference proportion between the computing subnode with the longest pre-
+dicted execution time and the computing subnode with the shortest predicted execution time; and
+comparing the time difference proportion with a preset difference proportion threshold; and if the time difference
+proportion is less than or equal to the preset difference proportion threshold, determining that load balancing does
+not need to be performed in the Nth round of iterative task; or if the time difference proportion is greater than the
+preset difference proportion threshold, determining that load balancing needs to be performed in the Nth round of
+iterative task.
+
+[0132] For example, the difference proportion threshold is set to 10%. Assuming that in the Nth round of iterative task,
+a predicted execution time of the computing subnode with the longest predicted execution time is 120s, and a predicted
+execution  time  of the  computing subnode with  the shortest  predicted execution  time is 95s, a  difference proportion
+between the predicted execution times of the two computing subnodes is 26.3%, which is greater than the difference
+proportion threshold.  Therefore, it is determined that  load balancing  needs to be performed in the (N+1)th  round  of
+iterative task. For another example, in the Nth round of iterative task, a predicted execution time of the computing subnode
+with the longest predicted execution time is 107s, and a predicted execution time of the computing subnode with the
+shortest predicted execution time is 100s, then a difference proportion between the predicted execution times of the two
+computing subnodes is 7%, which is less than the difference proportion threshold. Therefore, it is determined that load
+balancing does not need to be performed in the (N+1)th round of iterative task.
+[0133] S404: Reallocate task  data to each computing subnode according to the predicted execution time of each
+computing subnode (this step is completely the same as S303; refer to S303 for details, which are not provided herein
+again).
+[0134] S405: Each computing subnode executes the Nth round of iterative task according to the allocated task data
+
+5
+
+10
+
+15
+
+20
+
+25
+
+30
+
+35
+
+40
+
+45
+
+50
+
+55
+
+22
+
+EP 3 139 270 A1
+
+(this step is completely the same as S304; refer to S304 for details, which are not provided herein again).
+[0135] S406: Obtain execution status information of each computing subnode in the Nth round of iterative task (this
+step is completely the same as S306; refer to S306 for details, which are not provided herein again).
+[0136] S407: Update a training parameter of the time learning model according to the execution status information of
+each computing subnode.
+[0137] Specifically, at least one parameter of the execution time training parameter, the computing resource usage
+training parameter, or the historical task data volume training parameter of the time learning model may be updated
+according to the execution status information of each computing subnode.
+[0138] S408: After the Nth round of iterative task is completed, determine whether an iterative task ends. If the iterative
+task has not ended, S402 to S408 are repeated by using an updated time learning model; otherwise, S409 is performed.
+[0139] S409: End the data mining task.
+[0140] This embodiment of the present invention provides a data mining method. A predicted execution time of each
+computing subnode in a current round of iterative task is obtained, and a corresponding volume of task data is allocated
+to the computing subnode according to the predicted execution time; after the current round of iterative task is executed,
+execution status information of each computing subnode in the current round of iterative task is collected, and whether
+the task data volume of each computing subnode needs to be adjusted in a next round of iterative task is determined
+accordingly, and the next round of iterative task is performed according to the adjusted task data volume. Alternatively,
+a predicted execution time of each computing subnode in a current round of iterative task is obtained according to a
+time learning model, and whether load balancing needs to be performed in the current round of iterative task is determined
+according to the predicted execution time; if load balancing needs to be performed, a volume of task data allocated to
+each computing subnode is adjusted; after the current round of iterative task is executed, execution status information
+of each computing subnode in the current round of iterative task is collected, and a training parameter of the time learning
+model is updated accordingly; and the foregoing process is repeated in a next round of iteration. Compared with the
+prior art in which load balancing is executed in each round of iterative task process, in this embodiment of the present
+invention, a corresponding volume of task data can be allocated according to a capability of each computing subnode,
+and a task data volume of each computing subnode in a current round of task can be adjusted according to an execution
+status in a previous round. In this way, some unnecessary load balancing processes can be avoided, network consumption
+can be reduced, and data mining performance of a system can be improved.
+[0141]
+In the several embodiments provided in the present invention, it should be understood that the disclosed node,
+system, and method may be implemented in other manners.  For example, the described apparatus  embodiment is
+merely exemplary. For example, the unit division is merely logical function division and may be other division in actual
+implementation. For example, a plurality of units or components may be combined or integrated into another system,
+or some features may be ignored or not performed. In addition, the displayed or discussed mutual couplings or direct
+couplings  or  communication  connections  may  be  implemented  by  using  some  interfaces. The  indirect  couplings  or
+communication connections between the apparatuses or units may be implemented in electronic, mechanical, or other
+forms.
+[0142] The units described as separate parts may or may not be physically separate, and parts displayed as units
+may or may not be physical units, may be located in one position, or may be distributed on a plurality of network units.
+Some  or  all  the  units  may  be  selected  according  to  actual  needs  to  achieve  the  objectives  of  the  solutions  of  the
+embodiments.
+[0143]
+In addition, functional units in the embodiments of the present invention may be integrated into one processing
+unit, or each of the units may exist alone physically, or two or more units are integrated into one unit. The integrated unit
+may be implemented in a form of hardware, or may be implemented in a form of hardware in addition to a software
+functional unit.
+[0144] When the foregoing integrated unit is implemented in a form of a software functional unit, the integrated unit
+may be stored in a computer-readable storage medium. The software functional unit is stored in a storage medium and
+includes several instructions for instructing a computer device (which may be a personal computer, a server, or a network
+device) or  a processor  to perform  a part of  the steps of  the methods described  in the  embodiments of  the present
+invention. The foregoing storage medium includes: any medium that can store program code, such as a USB flash drive,
+a removable hard disk, a read-only memory (Read-Only Memory, ROM), a random access memory (Random Access
+Memory, RAM), a magnetic disk, or an optical disc.
+[0145] Finally, it should be noted that the foregoing embodiments are merely intended for describing the technical
+solutions of the present invention, but not for limiting the present invention. Although the present invention is described
+in detail with reference to the foregoing embodiments, persons of ordinary skill in the art should understand that they
+may still  make modifications to the technical solutions  described in  the foregoing  embodiments  or make equivalent
+replacements to some or all technical features thereof, without departing from the scope of the technical solutions of the
+embodiments of the present invention.
+
+5
+
+10
+
+15
+
+20
+
+25
+
+30
+
+35
+
+40
+
+45
+
+50
+
+55
+
+23
+
+EP 3 139 270 A1
+
+Claims
+
+1. A central node, applied to a data mining system, wherein the central node comprises:
+
+a time obtaining unit, configured to obtain a predicted execution time of each computing subnode in the Nth
+round of iterative task;
+an allocation unit, configured to reallocate task data to each computing subnode according to the predicted
+execution time of each computing subnode, wherein the task data is a part or all of data in an obtained to-be-
+mined sample data set;
+an information obtaining unit, configured to: after each computing subnode completes the Nth round of iterative
+task according to the allocated task data, if an iterative task has not ended, obtain execution status information
+of each computing subnode in the Nth round of iterative task; and
+a first determining unit, configured to: determine, according to the execution status information of each computing
+subnode, whether load balancing needs to be performed in the (N+1)th round of iterative task, wherein if load
+balancing needs to be performed, after 1 is added to a value of N, the step of obtaining a predicted execution
+time of each computing subnode in the Nth round of iterative task to the step of determining, according to the
+execution status information of each computing subnode, whether load balancing needs to be performed in the
+(N+1)th round of iterative task are repeated; and if load balancing does not need to be performed, each computing
+subnode executes the (N+1)th round of iterative task according to the task data that is allocated to the computing
+subnode in the Nth round of iterative task, wherein N is a positive integer, and a start value of N is 1.
+
+2. The central node according to claim 1, wherein when N is equal to 1, the time obtaining unit is specifically configured to:
+
+obtain the predicted execution time of each computing subnode according to a distribution characteristic pa-
+rameter of the sample data set and a computing resource of each computing subnode, wherein
+the distribution characteristic parameter of the sample data set comprises: an average value, a variance, a
+quantity of different values, and a value range that are of values, in a same field, of data in the sample data set; and
+the computing resource of each computing subnode comprises: at least one of a CPU frequency or a memory
+capacity of the computing subnode.
+
+3. The central node according to claim 1, wherein when N is greater than 1, the time obtaining unit is specifically
+
+configured to:
+
+use an actual execution time within which each computing subnode executes the (N-1)th round of iterative task
+as the predicted execution time of the computing subnode in the Nth round of iterative task.
+
+4. The central node according to any one of claims 1 to 3, wherein the allocation unit comprises:
+
+a node selection unit, configured to determine a computing subnode whose predicted execution time is greater
+than a standard execution time as an overloaded node, and determine a computing subnode whose predicted
+execution time is less than the standard execution time as an idle node;
+a unit for determining a to-be-transferred task volume, configured to obtain a proportion of tasks to be transferred
+from each overloaded node according to a predicted execution time of each overloaded node and the standard
+execution time, and obtain, according to the proportion of tasks to be transferred from each overloaded node,
+a volume of task data that needs to be transferred from each overloaded node;
+a unit for determining a to-be-received task volume, configured to obtain a proportion of tasks to be received
+by each idle node according to a predicted execution time of each idle node and the standard execution time,
+and obtain, according to the proportion of tasks to be received by each idle node, a volume of task data that is
+capable of being received by each idle node; and
+a transfer unit, configured to sequentially transfer out, according to a volume, corresponding to the overloaded
+node, of task data that needs to be transferred, task data of each overloaded node in a descending order of
+predicted execution times of overloaded nodes, and sequentially transfer the task data into at least one idle
+node, which is sequenced in an ascending order of predicted execution times of idle nodes, according to the
+volume of task data that is capable of being received by each idle node, until all task data that needs to be
+transferred from the overloaded nodes is transferred completely.
+
+5. The central node according to claim 4, wherein
+
+the unit for determining a to-be-transferred task volume is specifically configured to:
+
+5
+
+10
+
+15
+
+20
+
+25
+
+30
+
+35
+
+40
+
+45
+
+50
+
+55
+
+24
+
+EP 3 139 270 A1
+
+divide a difference between the predicted execution time of each overloaded node and the standard execution
+time by the standard execution time, to obtain the proportion of tasks to be transferred from the overloaded
+node; and
+multiply a  task  data volume  of  task  data stored  on each  overloaded  node  by  the proportion  of tasks to be
+transferred from the overloaded node, to obtain the volume of task data that needs to be transferred from the
+overloaded node; and
+the unit for determining a to-be-received task volume is specifically configured to:
+
+divide an absolute value of a difference between the predicted execution time of each idle node and the
+standard execution time by the standard execution time, to obtain the proportion of tasks to be received by
+the idle node; and
+multiply a task data volume of task data stored on each idle node by the proportion of tasks to be received
+by the idle node, to obtain the volume of task data that is capable of being received by the idle node.
+
+6. The central node according to any one of claims 1 to 5, wherein the execution status information of each computing
+subnode in the Nth round of iterative task comprises: at least one of an actual execution time, a computing resource
+usage, or a task data volume of each computing subnode in the Nth round of iterative task; and
+the computing resource usage comprises: at least one of a CPU usage or a memory usage.
+
+5
+
+10
+
+15
+
+20
+
+7. The central node according to claim 6, wherein the first determining unit is specifically configured to:
+
+25
+
+30
+
+35
+
+40
+
+45
+
+50
+
+55
+
+determine, among all the computing subnodes in the Nth round of iterative task, a computing subnode with a
+longest actual execution time and a computing subnode with a shortest actual execution time;
+obtain an actual-execution-time difference proportion between the computing subnode with the longest actual
+execution time and the computing subnode with the shortest actual execution time; and
+compare the time difference proportion with a preset difference proportion threshold; and if the time difference
+proportion is less than or equal to the preset difference proportion threshold, determine that load balancing does
+not need to be performed in the (N+1)th round of iterative task; or if the time difference proportion is greater
+than the preset difference proportion threshold, determine that load balancing needs to be performed in the
+(N+1)th round of iterative task.
+
+8. The  central node  according  to  any  one  of  claims  1  to  7,  wherein  the  central  node  further  comprises  a  second
+
+determining unit, which is specifically configured to:
+
+after each computing subnode completes the Nth round of iterative task, determine whether N is equal to a
+preset maximum iteration quantity; and if N is less than the maximum iteration quantity, determine that the
+iterative task has not ended; or if N is equal to the maximum iteration quantity, determine that the iterative task
+ends; or
+after each computing subnode completes the Nth round of iterative task, determine whether an output result of
+the Nth round of iteration meets a convergence condition; and if the convergence condition is not met, determine
+that the iterative task has not ended; or if the convergence condition is met, determine that the iterative task ends.
+
+9. A central node, applied to a data mining system, wherein the central node comprises:
+
+a time obtaining unit, configured to obtain a predicted execution time of each computing subnode in the Nth
+round of iterative task according to a time learning model;
+a first determining unit, configured to determine, according to the predicted execution time of each computing
+subnode, whether load balancing needs to be performed in the Nth round of iterative task;
+an  allocation unit, configured to: when  load  balancing needs to  be  performed, reallocate task data to each
+computing subnode according to the predicted execution time of each computing subnode, wherein when load
+balancing does not need to be performed, no task data is reallocated to each computing subnode, and the task
+data is a part or all of data in an obtained to-be-mined sample data set;
+an information obtaining unit, configured to: after each computing subnode completes the Nth round of iterative
+task according to the allocated task data, obtain execution status information of each computing subnode in
+the Nth round of iterative task; and
+an update unit, configured to update a training parameter of the time learning model according to the execution
+status information of each computing subnode, wherein if the iterative task has not ended, after 1 is added to
+a value of N, the step of obtaining a predicted execution time of each computing subnode in the Nth round of
+
+25
+
+EP 3 139 270 A1
+
+iterative task according to a time learning model to the step of updating the time learning model according to
+the execution status information of each computing subnode are repeated by using an updated time learning
+model.
+
+5
+
+10. The central node according to claim 9, wherein the time learning model is established according to at least one
+
+parameter of an actual execution time, a computing resource usage, or a historical task data volume.
+
+11. The central node according to claim 10, wherein the time learning model comprises:
+
+10
+
+15
+
+Predicted execution time of a computing subnode i in the Nth round of iterative task = a * Actual execution time
+of the computing subnode i in the (N-1)th round of iterative task + b * Computing resource usage of the computing
+subnode i in the (N-1)th round of iterative task + c * Historical task data volume of the computing subnode i in
+the (N-1)th round of iterative task + C, wherein
+a is an execution time training parameter, b is a computing resource usage training parameter, c is a historical
+task volume training parameter, C is a training constant, and i is a positive integer; the computing resource
+usage comprises at least one of a CPU usage or a memory usage; and the historical task data volume of the
+computing subnode i in the (N-1)th round of iterative task is a volume of task data allocated to the computing
+subnode i in the (N-1)th round of iterative task.
+
+20
+
+12. The central node according to any one of claims 9 to 11, wherein the first determining unit is specifically configured to:
+
+25
+
+30
+
+35
+
+40
+
+45
+
+50
+
+55
+
+determine, among all the computing subnodes in the Nth round of iterative task, a computing subnode with a
+longest predicted execution time and a computing subnode with a shortest predicted execution time;
+obtain a predicted-execution-time difference proportion between the computing subnode with the longest pre-
+dicted execution time and the computing subnode with the shortest predicted execution time; and
+compare the time difference proportion with a preset difference proportion threshold; and if the time difference
+proportion is less than or equal to the preset difference proportion threshold, determine that load balancing does
+not need to be performed in the Nth round of iterative task; or if the time difference proportion is greater than
+the preset difference proportion threshold, determine that load balancing needs to be performed in the Nth round
+of iterative task.
+
+13. The central node according to any one of claims 9 to 12, wherein the allocation unit comprises:
+
+a node selection unit, configured to determine a computing subnode whose predicted execution time is greater
+than a standard execution time as an overloaded node, and determine a computing subnode whose predicted
+execution time is less than the standard execution time as an idle node;
+a unit for determining a to-be-transferred task volume, configured to obtain a proportion of tasks to be transferred
+from each overloaded node according to a predicted execution time of each overloaded node and the standard
+execution time, and obtain, according to the proportion of tasks to be transferred from each overloaded node,
+a volume of task data that needs to be transferred from each overloaded node;
+a unit for determining a to-be-received task volume, configured to obtain a proportion of tasks to be received
+by each idle node according to a predicted execution time of each idle node and the standard execution time,
+and obtain, according to the proportion of tasks to be received by each idle node, a volume of task data that is
+capable of being received by each idle node; and
+a transfer unit, configured to sequentially transfer out, according to a volume, corresponding to the overloaded
+node, of task data that needs to be transferred, task data of each overloaded node in a descending order of
+predicted execution times of overloaded nodes, and sequentially transfer the task data into at least one idle
+node, which is sequenced in an ascending order of predicted execution times of idle nodes, according to the
+volume of task data that is capable of being received by each idle node, until all task data that needs to be
+transferred from the overloaded nodes is transferred completely.
+
+14. The central node according to claim 13, wherein
+
+the unit for determining a to-be-transferred task volume is specifically configured to:
+
+divide a difference between the predicted execution time of each overloaded node and the standard execution
+time by the standard execution time, to obtain the proportion of tasks to be transferred from the overloaded
+node; and
+multiply a  task  data volume  of  task  data stored  on each  overloaded  node  by  the proportion  of tasks to be
+
+26
+
+EP 3 139 270 A1
+
+transferred from the overloaded node, to obtain the volume of task data that needs to be transferred from the
+overloaded node; and
+the unit for determining a to-be-received task volume is specifically configured to:
+
+divide an absolute value of a difference between the predicted execution time of each idle node and the
+standard execution time by the standard execution time, to obtain the proportion of tasks to be received by
+the idle node; and
+multiply a task data volume of task data stored on each idle node by the proportion of tasks to be received
+by the idle node, to obtain the volume of task data that is capable of being received by the idle node.
+
+15. The central node according to any one of claims 9 to 14, wherein the execution status information of each computing
+subnode in the Nth round of iterative task comprises: at least one of an actual execution time, a computing resource
+usage, or a task data volume of each computing subnode in the Nth round of iterative task; and
+the computing resource usage comprises: at least one of a CPU usage or a memory usage.
+
+16. The central node according to claim 11, wherein the update unit is specifically configured to:
+
+update at least one parameter of the execution time training parameter, the computing resource usage training
+parameter, or the historical task data volume training parameter of the time learning model according to the
+execution status information of each computing subnode.
+
+17. A data mining method, wherein the method comprises:
+
+obtaining a predicted execution time of each computing subnode in the Nth round of iterative task;
+reallocating task data to each computing subnode according to the predicted execution time of each computing
+subnode, wherein the task data is a part or all of data in an obtained to-be-mined sample data set;
+after each computing subnode completes the Nth round of iterative task according to the allocated task data, if
+an iterative task has not ended, obtaining execution status information of each computing subnode in the Nth
+round of iterative task; and
+determining, according to the execution status information of each computing subnode, whether load balancing
+needs to be performed in the (N+1)th round of iterative task, wherein if load balancing needs to be performed,
+after 1 is added to a value of N, the step of obtaining a predicted execution time of each computing subnode in
+the Nth round of iterative task to the step of determining, according to the execution status information of each
+computing subnode, whether load balancing needs to be performed in the (N+1)th round of iterative task are
+repeated; and if load balancing does not need to be performed, each computing subnode executes the (N+1)th
+round of iterative task according to the task data that is allocated to the computing subnode in the Nth round of
+iterative task, wherein N is a positive integer, and a start value of N is 1.
+
+18. The method according to claim 17, wherein when N is equal to 1, the obtaining a predicted execution time of each
+
+computing subnode in the Nth round of iterative task comprises:
+
+obtaining the predicted execution time of each computing subnode according to a distribution characteristic
+parameter of the sample data set and a computing resource of each computing subnode, wherein
+the distribution characteristic parameter of the sample data set comprises: an average value, a variance, a
+quantity of different values, and a value range that are of values, in a same field, of data in the sample data set; and
+the computing resource of each computing subnode comprises: at least one of a CPU frequency or a memory
+capacity of the computing subnode.
+
+19. The method according to claim 17, wherein when N is greater than 1, the obtaining a predicted execution time of
+
+each computing subnode in the Nth round of iterative task comprises:
+
+using an actual execution time within which each computing subnode executes the (N-1)th round of iterative
+task as the predicted execution time of the computing subnode in the Nth round of iterative task.
+
+5
+
+10
+
+15
+
+20
+
+25
+
+30
+
+35
+
+40
+
+45
+
+50
+
+55
+
+20. The method according to any one of claims 17 to 19, wherein the reallocating task data to each computing subnode
+
+according to the predicted execution time of each computing subnode comprises:
+
+determining a computing subnode whose predicted execution time is greater than a standard execution time
+
+27
+
+EP 3 139 270 A1
+
+as an overloaded node, and determining a computing subnode whose predicted execution time is less than the
+standard execution time as an idle node;
+obtaining a proportion of tasks to be transferred from each overloaded node according to a predicted execution
+time of each overloaded node and the standard execution time, and obtaining, according to the proportion of
+tasks to be transferred from each overloaded node, a volume of task data that needs to be transferred from
+each overloaded node;
+obtaining a proportion of tasks to be received by each idle node according to a predicted execution time of each
+idle node and the standard execution time, and obtaining, according to the proportion of tasks to be received
+by each idle node, a volume of task data that is capable of being received by each idle node; and
+sequentially transferring out, according to a volume, corresponding to the overloaded node, of task data that
+needs to be transferred, task data of each overloaded node in a descending order of predicted execution times
+of overloaded nodes, and sequentially transferring the task data into at least one idle node, which is sequenced
+in an ascending order of predicted execution times of idle nodes, according to the volume of task data that is
+capable of being received by each idle node, until all task data that needs to be transferred from the overloaded
+nodes is transferred completely.
+
+21. The method according to claim 20, wherein
+
+the obtaining a proportion of tasks to be transferred from each overloaded node according to a predicted execution
+time of each overloaded node and the standard execution time, and obtaining, according to the proportion of tasks
+to be transferred from each overloaded node, a volume of task data that needs to be transferred from each overloaded
+node comprises:
+
+dividing a difference between the predicted execution time of each overloaded node and the standard execution
+time by the standard execution time, to obtain the proportion of tasks to be transferred from the overloaded
+node; and
+multiplying a task data volume of task data stored on each overloaded node by the proportion of tasks to be
+transferred from the overloaded node, to obtain the volume of task data that needs to be transferred from the
+overloaded node; and
+the obtaining a proportion of tasks to be received by each idle node according to a predicted execution time of
+each  idle  node  and  the  standard  execution  time,  and  obtaining, according  to  the proportion  of  tasks  to  be
+received by each idle node, a volume of task data that is capable of being received by each idle node comprises:
+
+dividing an absolute value of a difference between the predicted execution time of each idle node and the
+standard execution time by the standard execution time, to obtain the proportion of tasks to be received by
+the idle node; and
+multiplying a task data volume of task data stored on each idle node by the proportion of tasks to be received
+by the idle node, to obtain the volume of task data that is capable of being received by the idle node.
+
+22. The method according to any one of claims 17 to 21, wherein the execution status information of each computing
+subnode in the Nth round of iterative task comprises: at least one of an actual execution time, a computing resource
+usage, or a task data volume of each computing subnode in the Nth round of iterative task; and
+the computing resource usage comprises: at least one of a CPU usage or a memory usage.
+
+23. The method according to claim 22, wherein the determining, according to the execution status information of each
+computing subnode, whether load balancing needs to be performed in the (N+1)th round of iterative task comprises:
+
+determining, among all the computing subnodes in the Nth round of iterative task, a computing subnode with a
+longest actual execution time and a computing subnode with a shortest actual execution time;
+obtaining an actual-execution-time difference proportion between the computing subnode with the longest actual
+execution time and the computing subnode with the shortest actual execution time; and
+comparing the time difference proportion with a preset difference proportion threshold; and if the time difference
+proportion is less than or equal to the preset difference proportion threshold, determining that load balancing
+does not need to be performed in the (N+1)th round of iterative task; or if the time difference proportion is greater
+than the preset difference proportion threshold, determining that load balancing needs to be performed in the
+(N+1)th round of iterative task.
+
+24. A data mining method, wherein the method comprises:
+
+5
+
+10
+
+15
+
+20
+
+25
+
+30
+
+35
+
+40
+
+45
+
+50
+
+55
+
+28
+
+EP 3 139 270 A1
+
+obtaining a predicted execution time of each computing subnode in the Nth round of iterative task according to
+a time learning model;
+determining, according to the predicted execution time of each computing subnode, whether load balancing
+needs to be performed in the Nth round of iterative task;
+when load balancing needs to be performed, reallocating task data to each computing subnode according to
+the predicted execution time of each computing subnode, wherein when load balancing does not need to be
+performed, no task data is reallocated to each computing subnode, and the task data is a part or all of data in
+an obtained to-be-mined sample data set;
+after each computing subnode completes the Nth round of iterative task according to the allocated task data,
+obtaining execution status information of each computing subnode in the Nth round of iterative task; and
+updating a training parameter of the time learning model according to the execution status information of each
+computing subnode, wherein if the iterative task has not ended, after 1 is added to a value of N, the step of
+obtaining a predicted execution time of each computing subnode in the Nth round of iterative task according to
+a time learning model to the step of updating the time learning model according to the execution status information
+of each computing subnode are repeated by using an updated time learning model, N is a positive integer, and
+a start value of N is 1.
+
+25. The method according to claim 24, wherein the time learning model is established according to at least one parameter
+
+of an actual execution time, a computing resource usage, or a historical task data volume.
+
+26. The method according to claim 25, wherein the time learning model comprises:
+
+Predicted execution time of a computing subnode i in the Nth round of iterative task = a * Actual execution time
+of the computing subnode i in the (N-1)th round of iterative task + b * Computing resource usage of the computing
+subnode i in the (N-1)th round of iterative task + c * Historical task data volume of the computing subnode i in
+the (N-1)th round of iterative task + C, wherein
+a is an execution time training parameter, b is a computing resource usage training parameter, c is a historical
+task volume training parameter, C is a training constant, and i is a positive integer; the computing resource
+usage comprises at least one of a CPU usage or a memory usage; and the historical task data volume of the
+computing subnode i in the (N-1)th round of iterative task is a volume of task data allocated to the computing
+subnode i in the (N-1)th round of iterative task.
+
+27. The method according to any one of claims 24 to 26, wherein the determining, according to the predicted execution
+time of each computing subnode, whether load balancing needs to be performed in the Nth round of iterative task
+comprises:
+
+determining, among all the computing subnodes in the Nth round of iterative task, a computing subnode with a
+longest predicted execution time and a computing subnode with a shortest predicted execution time;
+obtaining a predicted-execution-time difference proportion between the computing subnode with the longest
+predicted execution time and the computing subnode with the shortest predicted execution time; and
+comparing the time difference proportion with a preset difference proportion threshold; and if the time difference
+proportion is less than or equal to the preset difference proportion threshold, determining that load balancing
+does not need to be performed in the Nth round of iterative task; or if the time difference proportion is greater
+than the preset difference proportion threshold, determining that load balancing needs to be performed in the
+Nth round of iterative task.
+
+28. The method according to any one of claims 24 to 26, wherein the reallocating task data to each computing subnode
+
+according to the predicted execution time of each computing subnode comprises:
+
+determining a computing subnode whose predicted execution time is greater than a standard execution time
+as an overloaded node, and determining a computing subnode whose predicted execution time is less than the
+standard execution time as an idle node;
+obtaining a proportion of tasks to be transferred from each overloaded node according to a predicted execution
+time of each overloaded node and the standard execution time, and obtaining, according to the proportion of
+tasks to be transferred from each overloaded node, a volume of task data that needs to be transferred from
+each overloaded node;
+obtaining a proportion of tasks to be received by each idle node according to a predicted execution time of each
+idle node and the standard execution time, and obtaining, according to the proportion of tasks to be received
+
+5
+
+10
+
+15
+
+20
+
+25
+
+30
+
+35
+
+40
+
+45
+
+50
+
+55
+
+29
+
+EP 3 139 270 A1
+
+by each idle node, a volume of task data that is capable of being received by each idle node; and
+sequentially transferring out, according to a volume, corresponding to the overloaded node, of task data that
+needs to be transferred, task data of each overloaded node in a descending order of predicted execution times
+of overloaded nodes, and sequentially transferring the task data into at least one idle node, which is sequenced
+in an ascending order of predicted execution times of idle nodes, according to the volume of task data that is
+capable of being received by each idle node, until all task data that needs to be transferred from the overloaded
+nodes is transferred completely.
+
+29. The method according to claim 28, wherein
+
+the obtaining a proportion of tasks to be transferred from each overloaded node according to a predicted execution
+time of each overloaded node and the standard execution time, and obtaining, according to the proportion of tasks
+to be transferred from each overloaded node, a volume of task data that needs to be transferred from each overloaded
+node comprises:
+
+dividing a difference between the predicted execution time of each overloaded node and the standard execution
+time by the standard execution time, to obtain the proportion of tasks to be transferred from the overloaded
+node; and
+multiplying a task data volume of task data stored on each overloaded node by the proportion of tasks to be
+transferred from the overloaded node, to obtain the volume of task data that needs to be transferred from the
+overloaded node; and
+the obtaining a proportion of tasks to be received by each idle node according to a predicted execution time of
+each  idle  node  and  the  standard  execution  time,  and  obtaining, according  to  the proportion  of  tasks  to  be
+received by each idle node, a volume of task data that is capable of being received by each idle node comprises:
+
+dividing an absolute value of a difference between the predicted execution time of each idle node and the
+standard execution time by the standard execution time, to obtain the proportion of tasks to be received by
+the idle node; and
+multiplying a task data volume of task data stored on each idle node by the proportion of tasks to be received
+by the idle node, to obtain the volume of task data that is capable of being received by the idle node.
+
+30. The method according to any one of claims 24 to 29, wherein the execution status information of each computing
+subnode in the Nth round of iterative task comprises: at least one of an actual execution time, a computing resource
+usage, or a task data volume of each computing subnode in the Nth round of iterative task; and
+the computing resource usage comprises: at least one of a CPU usage or a memory usage.
+
+5
+
+10
+
+15
+
+20
+
+25
+
+30
+
+35
+
+40
+
+45
+
+50
+
+55
+
+30
+
+EP 3 139 270 A1
+
+31
+
+EP 3 139 270 A1
+
+32
+
+EP 3 139 270 A1
+
+33
+
+EP 3 139 270 A1
+
+34
+
+EP 3 139 270 A1
+
+35
+
+EP 3 139 270 A1
+
+36
+
+EP 3 139 270 A1
+
+37
+
+EP 3 139 270 A1
+
+38
+
+EP 3 139 270 A1
+
+39
+
+EP 3 139 270 A1
+
+40
+
+5
+
+10
+
+15
+
+20
+
+25
+
+30
+
+35
+
+40
+
+45
+
+50
+
+55
+
+EP 3 139 270 A1
+
+41
+
+5
+
+10
+
+15
+
+20
+
+25
+
+30
+
+35
+
+40
+
+45
+
+50
+
+55
+
+EP 3 139 270 A1
+
+42
+
+
